@@ -12,7 +12,7 @@
       <div class="modal-content scrollable-content">
         <div class="modal-header">
           <h5 class="modal-title" id="for-inventory">
-            Search for the drug you want to sell?
+            Search for the product you want to sell?
           </h5>
           <button
             class="close"

@@ -119,3 +119,9 @@ div.dataTables_wrapper div.dataTables_filter input {
   margin: 2px 0px 3px 0px;
   padding: 10px 5px;
 }
+
+.bg-login-image {
+  background: url("../../../public/img/pos.png") !important;
+  background-position: center;
+  background-size: cover;
+}
