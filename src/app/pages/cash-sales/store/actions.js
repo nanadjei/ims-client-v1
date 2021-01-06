@@ -31,7 +31,7 @@ export const saveNewSalesItems = ({ commit, dispatch }, saleObj) => {
         });
 
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 };
 
@@ -39,9 +39,9 @@ export const saveNewSalesItems = ({ commit, dispatch }, saleObj) => {
 export const printSaleItems = (saleObj) => {
     try {
         HttpRequest({ url: "sales/print/invoice", type: "post", user: "admin", data: saleObj }).then(() => {
-            console.log("Items printing...");
+            // console.log("Items printing...");
         });
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 };
