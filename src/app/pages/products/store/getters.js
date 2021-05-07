@@ -29,4 +29,9 @@ export const getProdModalInEditMode = (state) => {
     return state.prod_modal_in_edit_mode;
 };
 
+/** When refreshing or quering products sum total */
+export const getSetStockSumTotalIsBusy = (state) => state.stock_sum_total_is_busy;
+
+export const getSetStockSumTotal = (state) => state.stock_sum_total;
+
 

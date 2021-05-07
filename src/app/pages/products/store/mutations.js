@@ -25,3 +25,7 @@ export const SET_PROD_MODAL_IS_BUSY = (state, payload) => {
 export const SET_PROD_MODAL_IN_EDIT_MODE = (state, payload) => {
     return (state.prod_modal_in_edit_mode = payload);
 };
+
+export const SET_STOCK_SUM_TOTAL_IS_BUSY = (state, payload) => state.stock_sum_total_is_busy = payload;
+
+export const SET_STOCK_SUM_TOTAL = (state, payload) => state.stock_sum_total = payload;

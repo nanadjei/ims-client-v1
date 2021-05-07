@@ -35,6 +35,17 @@ export const searchProduct = ({ commit }, keyword) => {
     }, 1000);
 };
 
+/** Sum up the entire stock items */
+export const fetchStockSumTotal = ({ commit, }) => {
+    commit("SET_STOCK_SUM_TOTAL_IS_BUSY", true);
+    setTimeout(() => {
+        HttpRequest({ url: 'products/stock/sum/total', type: 'get', user: "admin" }).then((res) => {
+            commit("SET_STOCK_SUM_TOTAL", res.data.data);
+        });
+        commit("SET_STOCK_SUM_TOTAL_IS_BUSY", false);
+    }, 1000);
+};
+
 /** Remove deleted item from store and database */
 export const removeProductById = ({ getters }, id) => {
     const productsFromServer = getters.getProducts;

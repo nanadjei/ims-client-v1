@@ -43,14 +43,24 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <!-- <tfoot>
+                                        <tfoot v-show="isSuperAdmin">
                                             <tr>
                                             <th></th>
                                             <th></th>
-                                            <th>Sub Total</th>
-                                            <th>Total Sales</th>
+                                            <th>Overall Sum</th>
+                                            <th title="The sum of all stock quantities multiplied by their cost prices.">
+                                              {{ !getSetStockSumTotal ? "N/A" : Number(getSetStockSumTotal.aggregated_stock_cost_price).toFixed(2) }}
+                                              </th>
+                                            <th title="The sum of all stock quantities multiplied by their selling prices.">
+                                              {{ !getSetStockSumTotal ? "N/A" : Number(getSetStockSumTotal.aggregated_selling_price).toFixed(2) }}
+                                              </th>
+                                            <th title="Refresh">
+                                              <i @click="fetchStockSumTotal" 
+                                              class="fas fa-sync-alt" 
+                                              :class="{'fa-spin' : getSetStockSumTotalIsBusy }"></i>
+                                              </th>
                                             </tr>
-                                        </tfoot> -->
+                                        </tfoot>
                                         <tbody>
                                             <tr v-for="(item, index) in getProducts.data" :key="index">
                                                 <td width="50%" class="cursor-pointer">{{ _ucFirst(item.name) }}</td>
@@ -112,6 +122,7 @@
 </template>
 <script>
 import { debounce } from "lodash";
+import Spatie from "@/app/helpers/Spatie";
 import Paginate from "vuejs-paginate";
 import { ucFirst } from "@/app/helpers/app";
 import AppModal from "@/app/reusables/AppModal";
@@ -128,10 +139,15 @@ export default {
     };
   },
   computed: {
+    isSuperAdmin() {
+      return new Spatie().userHasRole('super admin');
+    },
     ...mapGetters({
       getProducts: "products/getProducts",
       getTotalPages: "products/getTotalPages",
-      getProductToEdit: "products/getProductInContext"
+      getProductToEdit: "products/getProductInContext",
+      getSetStockSumTotal: "products/getSetStockSumTotal",
+      getSetStockSumTotalIsBusy: "products/getSetStockSumTotalIsBusy"
     })
   },
   methods: {
@@ -139,7 +155,8 @@ export default {
       fetchProducts: "products/fetchProducts",
       removeProductItem: "products/removeProductById",
       updateProductItem: "products/updateProductItem",
-      searchProd: "products/searchProduct"
+      searchProd: "products/searchProduct",
+      fetchStockSumTotal: "products/fetchStockSumTotal"
     }),
     ...mapMutations({
       setProductToEdit: "products/SET_PRODUCT_IN_CONTEXT",

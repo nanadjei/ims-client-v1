@@ -4,5 +4,7 @@ export const state = () => ({
     total_pages: 0,
     product_in_context: "",
     prod_modal_is_busy: false,
-    prod_modal_in_edit_mode: false
+    prod_modal_in_edit_mode: false,
+    stock_sum_total_is_busy: false,
+    stock_sum_total: null
 });
