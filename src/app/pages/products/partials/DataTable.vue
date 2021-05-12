@@ -7,6 +7,7 @@
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">Products</h6>
             </div>
+            <!-- <div v-else style="color:#B6BACC !important;"> No results found for this query </div> -->
             <div class="table-responsive">
                 <div class="card-body">
                     <div class="table-responsive">
@@ -30,11 +31,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" v-if="getProducts && getProducts.data">
+                            <div class="row">
                                 <div class="col-sm-12">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <table v-if="getProducts && (getProducts.data.length)" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
+                                                <th>Id</th>
                                                 <th>Name</th>
                                                 <th>Stock Quantity</th>
                                                 <th>Quantity Remaining</th>
@@ -43,8 +45,10 @@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tfoot v-show="isSuperAdmin">
+                                        <!-- Display the aggregated stock values -->
+                                        <tfoot v-show="isSuperAdmin && (getProducts && getProducts.data.length)">
                                             <tr>
+                                            <th></th>
                                             <th></th>
                                             <th></th>
                                             <th>Overall Sum</th>
@@ -63,6 +67,7 @@
                                         </tfoot>
                                         <tbody>
                                             <tr v-for="(item, index) in getProducts.data" :key="index">
+                                                <td> {{ item.id }}</td>
                                                 <td width="50%" class="cursor-pointer">{{ _ucFirst(item.name) }}</td>
                                                 <td> {{ item.stock_quantity }}</td>
                                                 <td> {{ item.quantity_remaining }}</td>
@@ -77,12 +82,13 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div v-else style="color:#B6BACC !important;" class="text-center"> No results found for this query </div>
                                 </div>
 
                             </div>
                             
                             <!-- Pagination -->
-                            <div class="row">
+                            <div v-show="getProducts && (getProducts.data.length)" class="row">
                               <div class="col-sm-12 col-md-5">
                                   <div class="dataTables_info">{{ `Showing 1 to ${paginate_by} of ${getProducts && getProducts.pagination.total} entries` }}</div>
                                 </div>

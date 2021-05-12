@@ -34,6 +34,7 @@
                   <table v-if="getSalesReport && getSalesReport.length" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                       <tr>
+                        <th>Id</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Selling Price</th>
@@ -42,6 +43,7 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in getSalesReport" :key="index">
+                        <td>{{ item.id }}</td>
                         <td width="50%">{{ _ucFirst(item.product.name) }}</td>
                         <td>{{ item.quantity }}</td>
                         <td>{{ item.selling_price }}</td>

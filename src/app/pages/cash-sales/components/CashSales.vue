@@ -10,7 +10,7 @@
             </button>
           </div>
           <div class="btn-group mr-2" role="group" aria-label="Second group">
-            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#make-sales-modal">
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#select-date-modal">
               <i class="fas fa-calendar-alt"></i> Change Sales Date
             </button>
           </div>
@@ -80,7 +80,7 @@
     <inventory-modal></inventory-modal>
 
     <!-- Sales Date Modal-->
-    <div class="modal fade" id="make-sales-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="select-date-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
       aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
