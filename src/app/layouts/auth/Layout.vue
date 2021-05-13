@@ -86,6 +86,7 @@ export default {
     handleLogout() {
       logout();
       document.getElementsByClassName("modal-backdrop")[0].remove();
+      $('#logoutModal').modal('hide');
       return this.$router.push({ name: "login" });
     }
   }

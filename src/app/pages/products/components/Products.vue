@@ -45,7 +45,6 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
 export default {
   name: "Products",
   components: { AuthLayout, DataTable, AppModal },
-
   computed: {
     ...mapGetters({
       getProductToEdit: "products/getProductInContext"
@@ -62,19 +61,16 @@ export default {
       setProductInContext: "products/SET_PRODUCT_IN_CONTEXT",
       setProdInEditMode: "products/SET_PROD_MODAL_IN_EDIT_MODE"
     }),
-
     /** Make all stock quantities zero */
     async eraseAllStockQuantities() {
       await this.updateStockQuantities().then(() => {
         return this.$refs.confirmEraseQuantitiesModal.close();
       });
     },
-
     /** Make first letter uppercase */
     _ucFirst(string) {
       return ucFirst(string);
     },
-
     addProduct() {
       this.setProductInContext("");
       const productToEdit = { ...this.getProductToEdit };
@@ -82,7 +78,6 @@ export default {
       this.setProdInEditMode(false);
       this.$modal.show("productModal");
     },
-
     /** Remove item from storage by index
      *
      * @param { Int } itemIndex - The index of the array item
