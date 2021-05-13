@@ -4,7 +4,7 @@
         <h1 class="h3 mb-4 text-gray-800">Products</h1>
 
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-          <div class="btn-group mr-2" role="group" aria-label="First group">
+          <div v-if="isSuperAdmin" class="btn-group mr-2" role="group" aria-label="First group">
             <button @click="$refs.confirmEraseQuantitiesModal.show()" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm">
               <i class="fas fa-eraser"></i> Erase Stock Quantities
             </button>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import Spatie from "@/app/helpers/Spatie";
 import { ucFirst } from "@/app/helpers/app";
 import AppModal from "@/app/reusables/AppModal";
 import AuthLayout from "@/app/layouts/auth/Layout";
@@ -48,7 +49,10 @@ export default {
   computed: {
     ...mapGetters({
       getProductToEdit: "products/getProductInContext"
-    })
+    }),
+    isSuperAdmin() {
+      return new Spatie().userHasRole('super admin');
+    },
   },
   methods: {
     ...mapActions({
