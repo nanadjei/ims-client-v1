@@ -15,7 +15,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" @click="submit" class="btn " :class="submitBtnClass">{{ submitBtnName ? submitBtnName : "Submit" }}</button>
+            <button type="submit" @click="submit" class="btn" :class="submitBtnClass" :disabled="isLoading">
+              <i v-show="isLoading" class="fas fa-spinner fa-spin fa-spin"></i>
+              {{ submitBtnName ? submitBtnName : "Submit" }}
+              </button>
           </div>
         </div>
       </div>
@@ -25,14 +28,21 @@
 export default {
   name: "AppModal",
   props: ["title", "submitBtnClass", "submitBtnName", "modalId"],
+  data() {
+    return {
+      isLoading: false
+    }
+  },
   methods: {
-    submit() {
-      return this.$emit("onSubmit");
-    },
     show() {
       window.$(`#${this.modalId}`).modal("show");
     },
+    submit() {
+      this.isLoading = !this.isLoading;
+      return this.$emit("onSubmit");
+    },
     close() {
+      this.isLoading = !this.isLoading;
       window.$(`#${this.modalId}`).modal("hide");
     }
   }

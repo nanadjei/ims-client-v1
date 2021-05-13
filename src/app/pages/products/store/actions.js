@@ -59,3 +59,12 @@ export const removeProductById = ({ getters }, id) => {
     }, 1000);
 };
 
+/** Update stock quantities (Zeroing items) */
+export const updateStockQuantities = ({ dispatch }) => {
+    setTimeout(() => {
+        HttpRequest({ url: 'products/erase/stock/quantities', type: 'put', user: "admin" }).then(() => {
+            return dispatch("fetchProducts", { page_number: 1, paginate_by: 15 });
+        });
+    }, 1000);
+}
+
