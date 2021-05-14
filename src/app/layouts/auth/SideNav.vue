@@ -51,7 +51,7 @@
             <div id="inventory" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                   <a class="collapse-item cursor-pointer" @click="navigateToRouter({'name': 'products'})">Products</a>
-                  <!-- <a class="collapse-item cursor-pointer" >Stock Taking</a>x -->
+                  <a class="collapse-item cursor-pointer" @click="navigateToRouter({'name': 'stockout'})">Stock Out</a>
                 </div>
             </div>
             </li>
