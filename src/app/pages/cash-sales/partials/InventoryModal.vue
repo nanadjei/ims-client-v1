@@ -91,7 +91,6 @@ export default {
   mixins: [Mixin],
   data() {
     return {
-      scrollCounter: 0,
       highlighedProd: [], // when a product is highlighted in the modal table, set it here
       search: "", // Search keyword
       highlighedProdId: "", // Very important for filtering
@@ -150,7 +149,7 @@ export default {
      */
     addItemHighlightedItemToSales() {
       window.$("#inventory-modal").keypress((e) => {
-        if (e.charCode == 13 && this.highlighedProd.length) {
+        if (e.charCode == 13 && (this.highlighedProd.length && !this.highlighedProd[0]['quantity_remaining'] == 0)) {
           // When Enter is pressed
           if (!this.filterSalsesProdsById(this.highlighedProdId[0]).length) {
             this.$store.commit(

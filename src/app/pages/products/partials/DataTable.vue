@@ -38,11 +38,11 @@
                                             <tr>
                                                 <th>Id</th>
                                                 <th>Name</th>
-                                                <th>Status</th>
                                                 <th>Stock Quantity</th>
                                                 <th>Quantity Remaining</th>
                                                 <th>Cost Price</th>
                                                 <th>Selling Price</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -71,11 +71,11 @@
                                             <tr v-for="(item, index) in getProducts.data" :key="index">
                                                 <td> {{ item.id }}</td>
                                                 <td width="50%" class="cursor-pointer">{{ _ucFirst(item.name) }}</td>
-                                                <td> <span v-show="item.quantity_remaining == 0" class="badge badge-danger">Out Of Stock</span> </td>
                                                 <td> {{ item.stock_quantity }}</td>
                                                 <td> {{ item.quantity_remaining }}</td>
                                                 <td>{{ item.cost_price }}</td> 
                                                 <td>{{ (item.selling_price) }}</td>
+                                                <td> <span v-show="item.quantity_remaining == 0" class="badge badge-danger">Out Of Stock</span> </td>
                                                 <td>
                                                   <div class="btn-group" role="group" aria-label="Action buttons">
                                                     <i @click="setItemToEditId(item)" class="far fa-edit text-primary cursor-pointer pr-2" title="Edit"></i>
