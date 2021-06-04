@@ -5,7 +5,7 @@ import cloneDeep from "lodash";
 export const fetchProducts = ({ commit }, payload) => {
     commit("SET_FETCH_PRODUCTS_LOADING", true);
     setTimeout(() => {
-        HttpRequest({ url: `products/withpagination?page=${payload.page_number}`, type: 'post', user: "admin", data: { paginate: payload.paginate_by } }).then((res) => {
+        HttpRequest({ url: `products/withpagination?page=${payload.page_number}`, type: 'post', user: "admin", data: { paginate: payload.paginate_by, from: payload.query_date && payload.query_date['from'], to: payload.query_date && payload.query_date['to'] } }).then((res) => {
             commit("SET_PRODUCTS", res.data);
             commit("SET_TOTAL_PAGES", res.data.pagination.totalPages);
             commit("SET_FETCH_PRODUCTS_LOADING", false);

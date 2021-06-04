@@ -18,6 +18,21 @@
       </div>
     <div slot="content">
       <!-- Content here -->
+      <div class="btn-toolbar pb-4" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="btn-group mr-2" role="group" aria-label="First group">
+          <input id="from" class="form-control" v-model="query_date.from" type="date" >
+          </div>
+          <div class="btn-group mr-2" role="group" aria-label="Second group">
+            <input id="to" class="form-control" v-model="query_date.to" type="date" >
+          </div>
+          <div class="btn-group mr-2" role="group" aria-label="Third group">
+            <button :disabled="(!query_date.from || !query_date.to)"
+            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" @click="getProductsByDateSpecified">
+              <i v-if="!getFetchProductsLoading" class="far fa-paper-plane"></i> <i v-else class="fas fa-spinner fa-spin fa-spin"></i> Submit
+            </button>
+            <button @click="clearDates" class="btn btn-secondary shadow-sm" title="Click to clear both dates"> Clear </button>
+          </div>
+        </div>
       <data-table></data-table>
       <!-- Content here Ends -->
 
@@ -37,40 +52,67 @@
 
 <script>
 import Spatie from "@/app/helpers/Spatie";
-import { ucFirst } from "@/app/helpers/app";
+import { ucFirst, objectSetValues } from "@/app/helpers/app";
 import AppModal from "@/app/reusables/AppModal";
 import AuthLayout from "@/app/layouts/auth/Layout";
 import DataTable from "@/app/pages/products/partials/DataTable";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 export default {
   name: "Products",
+  data() {
+    return {
+      query_date: {
+        from: "",
+        to: ""
+      }
+    };
+  },
+
   components: { AuthLayout, DataTable, AppModal },
+
   computed: {
     ...mapGetters({
-      getProductToEdit: "products/getProductInContext"
+      getProductToEdit: "products/getProductInContext",
+      getFetchProductsLoading: "products/getFetchProductsLoading"
     }),
     isSuperAdmin() {
       return new Spatie().userHasRole('super admin');
     },
   },
+
   methods: {
     ...mapActions({
       updateStockQuantities: "products/updateStockQuantities",
+      fetchProdsByDate: "products/fetchProducts"
     }),
+
     ...mapMutations({
       setProductInContext: "products/SET_PRODUCT_IN_CONTEXT",
-      setProdInEditMode: "products/SET_PROD_MODAL_IN_EDIT_MODE"
+      setProdInEditMode: "products/SET_PROD_MODAL_IN_EDIT_MODE",
+      setFetchingProductsIsLoading: "products/SET_FETCH_PRODUCTS_LOADING"
     }),
+
+  getProductsByDateSpecified() {
+    this.setFetchingProductsIsLoading(true);
+    return this.fetchProdsByDate({paginate_by: 15, query_date: this.query_date });
+  },
+
+  clearDates() {
+      return objectSetValues(this.query_date, "");
+    },
+
     /** Make all stock quantities zero */
     async eraseAllStockQuantities() {
       await this.updateStockQuantities().then(() => {
         return this.$refs.confirmEraseQuantitiesModal.close();
       });
     },
+
     /** Make first letter uppercase */
     _ucFirst(string) {
       return ucFirst(string);
     },
+
     addProduct() {
       this.setProductInContext("");
       const productToEdit = { ...this.getProductToEdit };
@@ -78,6 +120,7 @@ export default {
       this.setProdInEditMode(false);
       this.$modal.show("productModal");
     },
+
     /** Remove item from storage by index
      *
      * @param { Int } itemIndex - The index of the array item

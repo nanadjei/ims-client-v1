@@ -94,6 +94,8 @@
                             <div v-show="getProducts && (getProducts.data.length)" class="row">
                               <div class="col-sm-12 col-md-5">
                                   <div class="dataTables_info">{{ `Showing 1 to ${paginate_by} of ${getProducts && getProducts.pagination.total} entries` }}</div>
+                                  <div class="pt-4" v-if="getProducts.data && sumTotalCost().by_cost_price"> Total Cost Price: <strong>GHS {{ Number(sumTotalCost().by_cost_price).toFixed(2) }}</strong> </div>
+                                  <div class="pt-2" v-if="getProducts.data && sumTotalCost().by_selling_price"> Total Selling Price: <strong>GHS {{ Number(sumTotalCost().by_selling_price).toFixed(2) }}</strong> </div>
                                 </div>
                                 <div class="col-sm-12 col-md-7">
                                   <div class="dataTables_paginate paging_simple_numbers">
@@ -133,7 +135,7 @@
 import { debounce } from "lodash";
 import Spatie from "@/app/helpers/Spatie";
 import Paginate from "vuejs-paginate";
-import { ucFirst } from "@/app/helpers/app";
+import { ucFirst, sum } from "@/app/helpers/app";
 import AppModal from "@/app/reusables/AppModal";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import ProductModal from "@/app/pages/products/partials/ProductModal";
@@ -175,6 +177,16 @@ export default {
     setItemToDeleteId(id) {
       this.itemToDeleteId = id;
       return this.$refs.confirmModal.show();
+    },
+
+    /** Sum up the total of products
+     * spread all the sales items from store and sum up their total_costs
+     */
+    sumTotalCost() {
+      return this.getProducts && {
+        'by_cost_price' : sum([...this.getProducts.data], "total_cost_price"),
+        'by_selling_price' : sum([...this.getProducts.data], "total_selling_price"),
+        };
     },
 
     /** When edit button is clicked, the product should be set in the vuex store and for edit/update */
