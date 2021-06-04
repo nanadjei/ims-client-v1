@@ -26,7 +26,7 @@
             <input id="to" class="form-control" v-model="query_date.to" type="date" >
           </div>
           <div class="btn-group mr-2" role="group" aria-label="Third group">
-            <button :disabled="(!query_date.from || !query_date.to)"
+            <button
             class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" @click="getProductsByDateSpecified">
               <i v-if="!getFetchProductsLoading" class="far fa-paper-plane"></i> <i v-else class="fas fa-spinner fa-spin fa-spin"></i> Submit
             </button>
