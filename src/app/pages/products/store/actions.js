@@ -13,12 +13,26 @@ export const fetchProducts = ({ commit }, payload) => {
     }, 1000);
 };
 
+/** Fetch products from the server which contains pagination links */
+// export const fetchProductsByDate = ({ commit }, payload) => {
+//     commit("SET_FETCH_PRODUCTS_LOADING", true);
+//     setTimeout(() => {
+//         HttpRequest({ url: `/query/by/date/interval?page=${payload.page_number}`, type: 'post', user: "admin", data: { paginate: payload.paginate_by, from: payload.query_date && payload.query_date['from'], to: payload.query_date && payload.query_date['to'] } }).then((res) => {
+//             commit("SET_PRODUCTS", res.data);
+//             commit("SET_TOTAL_PAGES", res.data.pagination.totalPages);
+//             commit("SET_FETCH_PRODUCTS_LOADING", false);
+//         });
+//     }, 1000);
+// };
+
 /** Update product item in store and save in database */
 export const updateProductItem = ({ commit, dispatch }, payload) => {
     commit("SET_PROD_MODAL_IS_BUSY", true);
     setTimeout(() => {
         HttpRequest({ url: payload.url, type: payload.method, user: "admin", data: payload.data })
-            .then(window.vm.$toast.success("Product successfully saved"));
+            .then((res) => {
+                res.data.status == '200' && window.vm.$toast.success("Product successfully saved")
+            }).catch(() => window.vm.$toast.error("Sorry, this action cannot be performed!")) ;
         if (payload.method === "post") {
             dispatch("fetchProducts", { page_number: 1, paginate_by: 15 });
         }

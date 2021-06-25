@@ -23,13 +23,13 @@
                     <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="stk-qty"> Stock Quantity: </label>
-                        <input id="stk-qty" type="number" class="form-control" v-model="getProductToEdit.stock_quantity">
+                        <input id="stk-qty" type="number" class="form-control" v-model="getProductToEdit.stock_quantity" readonly>
                     </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="rem-qty"> Remaining Quantity: </label>
-                        <input id="rem-qty" type="number" class="form-control" v-model="getProductToEdit.quantity_remaining">
+                        <input id="rem-qty" type="number" class="form-control" v-model="getProductToEdit.quantity_remaining" :min="getProductToEdit.quantity_remaining">
                     </div>
                     </div>
                 </div>
