@@ -43,7 +43,7 @@ export const updateProductItem = ({ commit, dispatch }, payload) => {
 
 export const searchProduct = ({ commit }, keyword) => {
     setTimeout(() => {
-        HttpRequest({ url: `products/search/${keyword}`, type: 'get', user: "admin" }).then((res) => {
+        HttpRequest({ url: `products/search/${keyword}`, type: 'post', user: "admin" }).then((res) => {
             commit("SET_PRODUCTS", res.data);
         });
     }, 1000);

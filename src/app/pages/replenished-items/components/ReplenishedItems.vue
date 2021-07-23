@@ -5,8 +5,8 @@
 
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
           <div v-show="products && products.length" class="btn-group mr-2" role="group" aria-label="First group">
-            <button @click="validateAndOpenModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-              <i class="fas fa-save"></i> Submit
+            <button @click="navigateToRouter({'name': 'restock'})" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+              <i class="fas fa-save"></i> Add Stock
             </button>
           </div>
         </div>
@@ -24,7 +24,7 @@
           <div class="col-8">
             <div class="card shadow mb-4">
               <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Restock Table</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Replenished Items Table</h6>
               </div>
               <div class="card-body">
                 <div class="table-responsive pb-6">
@@ -41,7 +41,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(item, index) in products" :key="index">
+                      <!-- <tr v-for="(item, index) in products" :key="index">
                         <td>{{ item.number }}</td> 
                         <td width="50%">
                           <vue-suggest 
@@ -55,8 +55,6 @@
                             >
                           </vue-suggest>
                         </td>
-                        <!-- @input="allowFloatsOnly($event, index, 'quantity')" -->
-                        
                         <td width="10%">
                           <ValidationProvider
                             :rules="returnFalseIfLastItem(index) ? 'required' : ''"
@@ -87,7 +85,7 @@
                         <td class="p-t-cell text-center">
                           <i v-if="hideTrashCan(index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
                         </td>
-                      </tr>
+                      </tr> -->
                     </tbody>
                   </table>
                   </ValidationObserver>
@@ -109,7 +107,7 @@
           </div>
         </div>
         <!-- Modal to confirm date of restocking items -->
-        <app-modal 
+        <!-- <app-modal 
             ref="sendRestockDataModal" 
             modal-id="sendRestockDataModal" 
             title="Please specify date" 
@@ -119,7 +117,7 @@
             >
             <input type="date" class="form-control" v-model="restock_at" @input="modal.disabled = false"/>
             <span v-show="!restock_at" class="text-danger fs-smaller">Please specify date of restock</span>
-          </app-modal>
+          </app-modal> -->
     </div>
   </auth-layout>
 </template>
@@ -131,7 +129,7 @@
 
 <script>
 import { debounce } from "lodash";
-import { ucFirst, sum } from "@/app/helpers/app";
+import { ucFirst, sum, navigateToRouter } from "@/app/helpers/app";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import AuthLayout from "@/app/layouts/auth/Layout";
 import Mixin from "@/app/pages/restock/mixin/mixin";
@@ -202,6 +200,10 @@ export default {
       setServerError: "restock/SET_SERVER_ERROR"
     }),
 
+    navigateToRouter(name) {
+      return navigateToRouter(name);
+    },
+
     async validateAndOpenModal() {
       await this.$refs.observer.validate().then((validated) => {
         if (!validated) {
@@ -219,11 +221,9 @@ export default {
         products: this.products.length == 1 ? this.products : this.products.slice(0, -1), 
         restock_at: this.restock_at 
         }).then(() => {
-        if(!this.isServerError) {
-          this.products = [this.stockBluePrint()]
-          this.cleanInput = !this.cleanInput;
-          this.restock_at = "";
-        }
+        if(!this.isServerError) this.products = [this.stockBluePrint()];
+        this.cleanInput = !this.cleanInput;
+        this.restock_at = "";
         return this.$refs.sendRestockDataModal.close();
       })
     },

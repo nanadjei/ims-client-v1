@@ -3,7 +3,7 @@ import auth from "@/app/middleware/auth";
 
 export default [
   {
-    path: "/restock",
+    path: "/products/restock",
     component: Restock,
     name: "restock",
     meta: {

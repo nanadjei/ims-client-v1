@@ -144,25 +144,27 @@ div.dataTables_wrapper div.dataTables_filter input {
   position: relative;
   z-index: 1;
 }
-.vue-suggestion .vs__list .vs__list-item {
-  background-color: #fff;
-  padding: 10px;
-  border-left: 1px solid #023d7b;
-  border-right: 1px solid #023d7b;
+
+/* ************************ */
+
+.pb-6 {
+  padding-bottom: 3rem;
 }
-.vue-suggestion .vs__list .vs__list-item:last-child {
-  border-bottom: none;
-}
-.vue-suggestion .vs__list .vs__list-item:hover {
-  background-color: #eee !important;
-}
-.vue-suggestion .vs__list,
-.vue-suggestion .vs__loading {
+
+.pos-absolute {
   position: absolute;
 }
-.vue-suggestion .vs__list .vs__list-item {
-  cursor: pointer;
+
+.list .list-item.list-item-active {
+  background-color: #4d72de;
+  color: #fff;
 }
-.vue-suggestion .vs__list .vs__list-item.vs__item-active {
-  background-color: #f3f6fa;
+
+.contenteditable {
+  position: relative;
+  display: block;
+}
+
+.was-invalid {
+  border: 1px solid #dc3545 !important;
 }

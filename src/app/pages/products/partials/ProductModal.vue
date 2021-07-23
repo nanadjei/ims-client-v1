@@ -23,7 +23,7 @@
                     <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="stk-qty"> Stock Quantity: </label>
-                        <input id="stk-qty" type="number" class="form-control" v-model="getProductToEdit.stock_quantity" readonly>
+                        <input id="stk-qty" type="number" class="form-control" v-model="getProductToEdit.stock_quantity" :readonly="productInEditMode">
                     </div>
                     </div>
                     <div class="col-md-6 col-sm-12">

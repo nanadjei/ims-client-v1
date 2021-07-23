@@ -1,4 +1,6 @@
 
+const $this = window.vm;
+
 /**
  * Set the values of an object to a specific value;
  * Example form:{email: "email", password: "password"};
@@ -41,6 +43,27 @@ export const sum = (items, propToSum) => {
     }, 0);
 };
 
+/**
+ * Multiply two numbers and convert them to float.
+ * 
+ * @param { Number } col1 
+ * @param { Number } col1 
+ * @returns Float of the multiplied numbers
+ */
+export const multiTwoCols = (col1, col2) => {
+    return (Number(col1) * Number(col2)).toFixed(2);
+}
+
+// export const allowFloatsOnly = (evt) => {
+//     var charCode = (evt.which) ? evt.which : evt.keyCode;
+//     console.log(evt.charCode);
+//           if (charCode != 46 && charCode > 31 
+//             && (charCode < 48 || charCode > 57))
+//              return false;
+
+//           return true;
+// }
+
 /** Hide some portion of email. Example: na**********@gmail.com */
 export const partiallyHideEmail = function (email) {
     return email.replace(/(.{2})(.*)(?=@)/, function (gp1, gp2, gp3) {
@@ -55,5 +78,5 @@ export const partiallyHideEmail = function (email) {
      * @var object routerName  - Eg; {'name': 'dashboard'}
      */
 export const navigateToRouter = (route) => {
-    if (this.$route.name !== route.name) this.$router.push(route);
+    if ($this.$route.name !== route.name) $this.$router.push(route);
 };
