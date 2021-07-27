@@ -1,6 +1,3 @@
-
-const $this = window.vm;
-
 /**
  * Set the values of an object to a specific value;
  * Example form:{email: "email", password: "password"};
@@ -75,8 +72,8 @@ export const partiallyHideEmail = function (email) {
 };
 
 /** Route to a specific component
-     * @var object routerName  - Eg; {'name': 'dashboard'}
-     */
+ * @var object routerName  - Eg; {'name': 'dashboard'}
+ */
 export const navigateToRouter = (route) => {
-    if ($this.$route.name !== route.name) $this.$router.push(route);
+    if (window.vm.$route.name !== route.name) window.vm.$router.push(route);
 };

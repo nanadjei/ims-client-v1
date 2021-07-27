@@ -1,4 +1,5 @@
 export const state = () => ({
   /** Products from server which we are ready to sell */
-  products: []
+  products: ["klbndkljbsjkfbd"],
+  is_loading: false
 });

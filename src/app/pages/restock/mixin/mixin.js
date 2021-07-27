@@ -2,6 +2,9 @@ export default {
     data() {
         return {
             vueSuggestIndex: 0,
+            cleanInput: false,
+            item: {},
+            items: [],
         }
     },
 

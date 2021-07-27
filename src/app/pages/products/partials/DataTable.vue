@@ -33,7 +33,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table v-if="getProducts && (getProducts.data.length)" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <table v-if="getProducts.data && (getProducts.data.length)" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
@@ -85,7 +85,10 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div v-else style="color:#B6BACC !important;" class="text-center"> No results found for this query </div>
+                                    <div v-else style="color:#B6BACC !important;" class="text-center"> 
+                                        <i class="fas fa-box-open fa-3x"></i>
+                                        <p>No results found for this query</p> 
+                                    </div>
                                 </div>
 
                             </div>

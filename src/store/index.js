@@ -6,6 +6,7 @@ import cashsales from "@/app/pages/cash-sales/store";
 import salesReport from "@/app/pages/sales-report/store";
 import stockout from "@/app/pages/stockout/store";
 import restock from "@/app/pages/restock/store";
+import replenished from "@/app/pages/replenished-items/store";
 
 import products from "@/app/pages/products/store";
 import createPersistedState from "vuex-persistedstate";
@@ -17,7 +18,7 @@ export default new Vuex.Store({
   state: {},
   mutations: {},
   actions: {},
-  modules: { auth, dashboard, cashsales, salesReport, stockout, products, restock },
+  modules: { auth, dashboard, cashsales, salesReport, stockout, products, restock, replenished },
   plugins: [
     createPersistedState(),
   ],

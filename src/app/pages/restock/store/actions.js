@@ -1,5 +1,6 @@
 import HttpRequest from "@/app/helpers/HttpRequest";
 
+
 /**
  * Send sale items into database
  * @param { Object } Data - The data to be stored in the database. Ie; specified_data and items
@@ -11,7 +12,6 @@ export const storeRestockData = ({ commit }, data) => {
         window.vm.$toast.success("Products successfully saved");
     }).catch(() => {
         commit("SET_SERVER_ERROR", true);
-        window.vm.$toast.error("Products could not save.");
     });
 };
 

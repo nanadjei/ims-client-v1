@@ -103,7 +103,7 @@ export default {
      * spread all the sales items from store and sum up their total_costs
      */
     aggregateTotalCostOfSalesItems() {
-      return sum([...this.getSalesReport], "total_cost");
+      return this.getSalesReport && sum([...this.getSalesReport], "total_cost");
     }
   },
   methods: {

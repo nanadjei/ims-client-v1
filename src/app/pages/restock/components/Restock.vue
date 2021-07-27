@@ -144,9 +144,6 @@ export default {
   mixins: [ Mixin ],
   data() {
     return {
-      cleanInput: false,
-      item: {},
-      items: [],
       tableNumbering: 1,
 
       modal: {
@@ -219,9 +216,9 @@ export default {
         products: this.products.length == 1 ? this.products : this.products.slice(0, -1), 
         restock_at: this.restock_at 
         }).then(() => {
-        if(!this.isServerError) {
+        if(this.isServerError !== true) {
           this.products = [this.stockBluePrint()]
-          this.cleanInput = !this.cleanInput;
+          this.cleanInput = true;
           this.restock_at = "";
         }
         return this.$refs.sendRestockDataModal.close();
