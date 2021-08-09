@@ -1,3 +1,4 @@
+import { incrementor } from "@/app/helpers/app";
 export default {
     data() {
         return {
@@ -10,38 +11,23 @@ export default {
 
     watch: {
         products(items) {
-        this.tableNumbering = 1;
-            for( let i = 0; i < items.length; i++ ) {
-                items[i].number = this.tableNumbering;
-                this.tableNumbering++;
-            }
+            return incrementor(items, this.tableNumbering = 1);
         }
     },
 
     methods: {
-        /** Product bluePrint/format */
-        stockBluePrint() {
-            return {
-                number: 1,
-                name: "",
-                product_id: "",
-                quantity: "",
-                cost_price: "",
-                total_cost_price: 0.00
-            }
-        },
 
         /** Add new table if the user clicks on the last table's name input */
-        appendNewBluePrint(index) {
+        appendNewBluePrintWith(arrayItems, index) {
             this.vueSuggestIndex = index;
-            if((index + 1) == (this.products.length)) {
-                return this.products.push(this.stockBluePrint());
+            if((index + 1) == (arrayItems.length)) {
+                return arrayItems.push(this.stockBluePrint());
             }
         },
 
         /** Hide the 1st item in the products array */
-        hideTrashCan(index) {
-            return index != this.products.indexOf(this.products[0]);
+        hideTrashCanWith(arrayItems, index) {
+            return index != arrayItems.indexOf(arrayItems[0]);
         },
 
         /** Validate if not last item in the table list */

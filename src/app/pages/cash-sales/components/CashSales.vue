@@ -37,6 +37,7 @@
                   <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                       <tr>
+                        <th>No.</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Selling Price</th>
@@ -46,14 +47,54 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in getSaleItems" :key="index">
-                        <td width="50%">{{ _ucFirst(item.name) }}</td>
-                        <td class="p-0 width-none" width="10%">
-                          <!-- <input ref="qty" class="qty contenteditable" v-model="sales.items[index].quantity" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57"/> -->
-                          <input :id="'input-'+ item.id" class="qty contenteditable" v-model="item.quantity" @input="updateSalesItems" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57"/>
-                          </td>
-                        <td>{{ parseFloat(item.selling_price).toFixed(2) }}</td>
-                        <td>{{ item.total_cost.toFixed(2) }}</td> 
-                        <td><i @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td>
+                        <td>{{ item.number }}</td> 
+                        <td width="50%">
+                          <vue-suggest 
+                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
+                            :index="index"
+                            :suggested-list="items"
+                            :clean-input="cleanInput"
+                            @onInputChange="searchProduct"
+                            @focus="appendNewBluePrintWith(getSaleItems, index)" 
+                            @onSelect="getSelectedItem"
+                            >
+                          </vue-suggest>
+                        </td>
+                        <!-- Quantity -->
+                        <td width="10%">
+                          <ValidationProvider
+                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
+                            name="quantity"
+                            v-slot="{ errors }">
+                          <input :class="['qty contenteditable', errors[0] ? 'was-invalid' : '']" 
+                              v-model="item.quantity"
+                              name="quantity"
+                              autocomplete="off"
+                              @keypress="acceptOnlyNumbers($event, index, 'quantity')"
+                            />
+                        </ValidationProvider>
+                        </td>
+                        <!-- Selling Price -->
+                        <td width="10%">
+                          <ValidationProvider
+                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
+                            name="sellling_price"
+                            v-slot="{ errors }">
+                          <input :class="['qty contenteditable', errors[0] ? 'was-invalid' : '']" 
+                              v-model="item.selling_price"
+                              name="sellling_price"
+                              autocomplete="off"
+                              @keypress="acceptOnlyNumbers($event, index, 'sellling_price')"
+                            />
+                        </ValidationProvider>
+                        </td>
+                        <!-- Item Total -->
+                        <td width="10%">{{ (item.quantity * item.selling_price || 0.00).toFixed(2) }}</td>
+                        <td width="10%" style="padding: 1.5rem">
+                          <div class="text-center" aria-label="Action buttons">
+                            <i v-if="hideTrashCanWith(getSaleItems, index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
+                          </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -77,7 +118,7 @@
 
 
     <!-- Inventory Modal -->
-    <inventory-modal></inventory-modal>
+    <!-- <inventory-modal></inventory-modal> -->
 
     <!-- Sales Date Modal-->
     <div class="modal fade" id="select-date-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -110,14 +151,18 @@
 
 <script>
 import AuthLayout from "@/app/layouts/auth/Layout";
+// import { debounce } from "lodash";
 import { ucFirst } from "@/app/helpers/app";
-import InventoryModal from "@/app/pages/cash-sales/partials/InventoryModal";
+// import InventoryModal from "@/app/pages/cash-sales/partials/InventoryModal";
 import { mapGetters, mapActions } from "vuex";
 import Mixin from "@/app/pages/cash-sales/mixins/mixin";
+import VueSuggest from '@/app/pages/restock/partials/VueSuggest';
+import VueSuggestMixing from "@/app/pages/restock/mixin/mixin";
+
 export default {
   name: "CashSales",
-  components: { AuthLayout, InventoryModal },
-  mixins: [Mixin],
+  components: { AuthLayout, VueSuggest },
+  mixins: [ Mixin, VueSuggestMixing ],
   data() {
     return {
       sales: {
@@ -140,6 +185,7 @@ export default {
       return this.sum([...this.getSaleItems], "total_cost");
     },
   },
+
   methods: {
     ...mapActions({
       dispatchSalesItems: "cashsales/saveNewSalesItems",
@@ -204,7 +250,7 @@ export default {
   mounted() {
     this.setFormCreatedAtToTodaysDate();
     this.sales.created_at = this.salesCreatedAt;
-    // this.sales.items = this.getSaleItems;
+
     /** Fetch products from server */
     this.$store.dispatch("cashsales/fetchProductsAsync");
   },

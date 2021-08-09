@@ -50,7 +50,7 @@
                             :suggested-list="items"
                             :clean-input="cleanInput"
                             @onInputChange="searchProduct"
-                            @focus="appendNewBluePrint(index)" 
+                            @focus="appendNewBluePrintWith(products, index)" 
                             @onSelect="getSelectedItem"
                             >
                           </vue-suggest>
@@ -85,7 +85,7 @@
                         </td>
                         <td class="p-t-cell">{{ item.total_cost_price = (item.quantity * item.cost_price).toFixed(2) }}</td> 
                         <td class="p-t-cell text-center">
-                          <i v-if="hideTrashCan(index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
+                          <i v-if="hideTrashCanWith(products, index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
                         </td>
                       </tr>
                     </tbody>
@@ -198,6 +198,18 @@ export default {
       setSearchedProds: "restock/SET_PRODUCTS",
       setServerError: "restock/SET_SERVER_ERROR"
     }),
+
+    /** Product bluePrint/format */
+    stockBluePrint() {
+        return {
+            number: 1,
+            name: "",
+            product_id: "",
+            quantity: "",
+            cost_price: "",
+            total_cost_price: 0.00
+        }
+    },
 
     async validateAndOpenModal() {
       await this.$refs.observer.validate().then((validated) => {
