@@ -47,16 +47,18 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in getSaleItems" :key="index">
-                        <td>{{ item.number }}</td> 
+                        <td style="padding: 1.5rem">{{ item.number }}</td> 
                         <td width="50%">
                           <vue-suggest 
                             :rules="returnFalseIfLastItem(index) ? 'required' : ''"
                             :index="index"
-                            :suggested-list="items"
-                            :clean-input="cleanInput"
-                            @onInputChange="searchProduct"
+                            :set-value="item.name"
+                            :suggested-list="getSearchedProds"
+                            :clean-input="cleanInput || !item.name"
+                            @onInputChange="handleSearch"
                             @focus="appendNewBluePrintWith(getSaleItems, index)" 
                             @onSelect="getSelectedItem"
+                            @onActiveItem="getActiveItem"
                             >
                           </vue-suggest>
                         </td>
@@ -70,29 +72,21 @@
                               v-model="item.quantity"
                               name="quantity"
                               autocomplete="off"
+                              @input="recalculateSale(item)"
                               @keypress="acceptOnlyNumbers($event, index, 'quantity')"
                             />
                         </ValidationProvider>
                         </td>
                         <!-- Selling Price -->
-                        <td width="10%">
-                          <ValidationProvider
-                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
-                            name="sellling_price"
-                            v-slot="{ errors }">
-                          <input :class="['qty contenteditable', errors[0] ? 'was-invalid' : '']" 
-                              v-model="item.selling_price"
-                              name="sellling_price"
-                              autocomplete="off"
-                              @keypress="acceptOnlyNumbers($event, index, 'sellling_price')"
-                            />
-                        </ValidationProvider>
+                        <td width="10%" style="padding: 1.5rem">
+                          {{ Number(item.selling_price).toFixed(2) }}
                         </td>
                         <!-- Item Total -->
-                        <td width="10%">{{ (item.quantity * item.selling_price || 0.00).toFixed(2) }}</td>
+                        <!-- <td width="10%" style="padding: 1.5rem">{{ (item.quantity * item.selling_price || 0.00).toFixed(2) }}</td> -->
+                        <td width="10%" style="padding: 1.5rem">{{ Number(item.total_cost).toFixed(2) || 0.00 }}</td>
                         <td width="10%" style="padding: 1.5rem">
                           <div class="text-center" aria-label="Action buttons">
-                            <i v-if="hideTrashCanWith(getSaleItems, index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
+                            <i @click="removeItemFromTable(item)" v-if="hideTrashCanWith(getSaleItems, index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
                           </div>
                         </td>
                       </tr>
@@ -113,6 +107,8 @@
                   </p>
               </div>
             </div>
+            <!-- Item details -->
+            <item-details v-show="!ifObjIsEmpty && getSearchedProds.length" :item="activeItem"></item-details>
           </div>
         </div>
 
@@ -158,15 +154,17 @@ import { mapGetters, mapActions } from "vuex";
 import Mixin from "@/app/pages/cash-sales/mixins/mixin";
 import VueSuggest from '@/app/pages/restock/partials/VueSuggest';
 import VueSuggestMixing from "@/app/pages/restock/mixin/mixin";
+import ItemDetails from "@/app/pages/cash-sales/partials/ItemDetails";
 
 export default {
   name: "CashSales",
-  components: { AuthLayout, VueSuggest },
+  components: { AuthLayout, VueSuggest, ItemDetails },
   mixins: [ Mixin, VueSuggestMixing ],
   data() {
     return {
+      activeItem: {},
       sales: {
-        created_at: "",
+        created_at: ""
       },
     };
   },
@@ -175,7 +173,8 @@ export default {
     ...mapGetters({
       salesCreatedAt: "cashsales/getCreatedAt",
       getSaleItems: "cashsales/getSaleItems",
-      getSalesObj: "cashsales/getSalesObj",
+      // getSalesObj: "cashsales/getSalesObj",
+      getSearchedProds: "cashsales/getProducts"
     }),
 
     /** Sum up the total of sales
@@ -188,9 +187,18 @@ export default {
 
   methods: {
     ...mapActions({
-      dispatchSalesItems: "cashsales/saveNewSalesItems",
-      dispatchPrintSaleItems: "cashsales/printSaleItems",
+      submitSalesItems: "cashsales/saveNewSalesItems",
+      printSaleItems: "cashsales/printSaleItems",
+      searchProduct: "cashsales/searchProduct",
+      deleteByIndex: "cashsales/removeSaleItemByIndex"
     }),
+
+    /** When navigating through the dropdown items on VueSuggest
+     * Get each active item.
+     */
+    getActiveItem(payload) {
+      return this.activeItem = payload;
+    },
 
     /** Make first letter uppercase */
     _ucFirst(string) {
@@ -199,11 +207,11 @@ export default {
 
     /** Send sales items to the server */
     submitSales() {
-      return this.dispatchSalesItems(this.getSalesObj);
+      return this.submitSalesItems(this.getSalesObj);
     },
 
     printSaleItems() {
-      return this.dispatchPrintSaleItems(this.getSalesObj);
+      return this.printSaleItems(this.getSalesObj);
     },
 
     /**
@@ -234,17 +242,12 @@ export default {
       }, 0);
     },
 
-    /** Update all sales items */
-    updateSalesItems() {
-      this.$store.dispatch("cashsales/updateSalesItems");
-    },
-
     /** Remove item from storage by index
      *
      * @param { Int } itemIndex - The index of the array item
      */
-    removeItemByIndex(itemIndex) {
-      this.$store.commit("cashsales/REMOVE_SALE_ITEM", itemIndex);
+    removeItemFromTable(item) {
+      return this.deleteByIndex(item);
     },
   },
   mounted() {
@@ -252,7 +255,7 @@ export default {
     this.sales.created_at = this.salesCreatedAt;
 
     /** Fetch products from server */
-    this.$store.dispatch("cashsales/fetchProductsAsync");
+    // this.$store.dispatch("cashsales/fetchProductsAsync");
   },
 };
 </script>

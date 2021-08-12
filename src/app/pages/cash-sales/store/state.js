@@ -4,14 +4,12 @@ export const state = () => ({
     items: [
       {
       number: 1,
-      cost_price: "",
-      manufacturer: "",
+      product_id: "",
       name: "",
-      quantity_remaining: "",
-      selling_price: "",
-      slug: "",
-      stock_quantity: "",
-    }
+      quantity: 1,
+      selling_price: 0.00,
+      total_cost: 0.00
+      }
     ],
   },
   /** Products from server which we are ready to sell */

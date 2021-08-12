@@ -7,7 +7,6 @@
                 v-slot="{ errors }">
                 <input :class="['qty contenteditable', errors && errors[0] ? 'was-invalid' : '']"
                 v-model="state"
-                name="state"
                 @input="emitInputChange"
                 min="2"
                 max="12"
@@ -19,9 +18,9 @@
                 autocomplete="off"
             />
             </ValidationProvider>
-            <div class="list-dropdown" v-if="listItems && isActive">
-                <ul class="list list-unstyled">
-                    <li :class="['list-item', { 'list-item-active': index === cursor }]" v-for="(item, index) in listItems" 
+            <div class="list-dropdown" v-if="suggestedList && isActive">
+                <ul id="items-list" class="list list-unstyled">
+                    <li :id="`item-${index}`" :class="['list-item', { 'list-item-active': index === cursor }]" v-for="(item, index) in suggestedList" 
                         :key="index"
                         @click="onSelect(item)"
                     >
@@ -54,6 +53,11 @@
         border: 1px solid #858796;
     }
 
+    /* .list.list-unstyled {
+        max-height: 80px;
+        overflow-y: scroll;   
+    } */
+
     .list-dropdown {
         position: absolute;
         z-index: 3;
@@ -68,23 +72,34 @@
 export default {
     name: 'vue-suggest',
 
-    props: [ "suggestedList", "cleanInput", "errors", "rules"],
+    props: [ "suggestedList", "cleanInput", "errors", "setValue", "rules" ],
 
     data() {
         return {
             cursor: 0,
-            state: "",
-            isActive: false,
-            listItems: []
+            state: this.setValue,
+            isActive: false
         }
     },
 
     watch: {
         suggestedList(value) {
-            if(value && this.state) this.listItems = this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
+            if(value && this.state) this.suggestedList = this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
         },
         cleanInput(value) {
             if(value) this.state = "";
+        },
+        // state(value) {
+        //     if(!value) this.suggestedList = []; this.suggestedList = [];
+        // },
+        setValue(value) {
+            return this.state = value;
+        },
+        suggestedList(value) {  
+            if(value.length && this.isActive === true) this.onActiveItem(value[this.cursor]);
+        },
+        cursor(value) {
+            return this.onActiveItem(this.suggestedList[value]);
         }
     },
 
@@ -102,14 +117,22 @@ export default {
             return this.isActive = false;
         },
 
+        onActiveItem(item) {
+            return this.$emit('onActiveItem', item);
+        },
+
         focus() {
+            this.suggestedList.length && this.isActive === true;
             return this.$emit('focus');
         },
 
         onSelect(item) {
-            // your search method
+            /** If item has finished do nothing. */
+            if(item.quantity_remaining === 0) return;
+            
             this.setState(item.name);
-            this.$emit('onSelect', item);
+            this.onActiveItem(item);
+            return this.$emit('onSelect', item);
         },
 
         /** Navigations */
@@ -121,30 +144,30 @@ export default {
         },
         keyDown() {
             this.$emit('key-down', this.state);
-            if ((this.isActive) && (this.listItems.length && this.cursor < this.listItems.length - 1)) {
+            if ((this.isActive) && (this.suggestedList.length && this.cursor < this.suggestedList.length - 1)) {
                 this.cursor += 1;
             }
         },
-    keyEnter() {
-        const targetListItem = this.listItems[this.cursor];
-        if (this.isActive && targetListItem) {
-            this.state = targetListItem.name;
-            this.isActive = false;
-        }
-        return this.$emit('onSelect', targetListItem);
+        keyEnter() {
+            const targetListItem = this.suggestedList[this.cursor];
+            /** If item has finished do nothing. */
+            if(targetListItem.quantity_remaining === 0) return;
+
+            if (this.isActive && targetListItem) {
+                this.state = targetListItem.name;
+                this.isActive = false;
+            }
+            return this.$emit('onSelect', targetListItem);
+            },
         },
-    },
+        
+
     created() {
         window.addEventListener('click', (e) => {
             if (!this.$el.contains(e.target)){
             this.isActive = false
             }
         })
-
-        // $(document).ready(function() {
-        //     /** Prevent auto complete */
-        //     $("input[name='state']").attr('autocomplete', 'new-password');
-        // })
     }
 }
 </script>
