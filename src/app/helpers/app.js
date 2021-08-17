@@ -88,3 +88,8 @@ export const incrementor = (loop, counter) => {
             counter++;
         }
     };
+
+// If route is not the same as arg then return true.
+export const ifRouteIs = (routeName) => {
+    return window.vm.$route.name == routeName ? true : false;
+}

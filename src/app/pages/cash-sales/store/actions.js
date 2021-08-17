@@ -1,4 +1,6 @@
 import HttpRequest from "@/app/helpers/HttpRequest";
+// import { itemsBlueprint } from "@/app/pages/cash-sales/store/state";
+
 // export const fetchProductsAsync = ({ commit }) => {
 //     setTimeout(() => {
 //         HttpRequest({ url: "products", type: "get", user: "admin" }).then((res) => {
@@ -58,7 +60,16 @@ export const recomputeSalesItems = ({ getters, commit }, prod) => {
 export const saveNewSalesItems = ({ commit }, saleObj) => {
     HttpRequest({ url: "sales", type: "post", user: "admin", data: saleObj }).then(() => {
         /** Set sales items back to empty to clear items in table */
-        commit("RESET_SALE_ITEM", []);
+        
+        commit("RESET_SALE_ITEM", [{
+            number: 1,
+            product_id: "",
+            name: "",
+            quantity: 1,
+            selling_price: 0.00,
+            total_cost: 0.00
+      }
+    ]);
         window.vm.$toast.success("Products successfully saved");
         /** Make a call to get fresh products so we can see the deducted products been updated */
         // dispatch("fetchProductsAsync");

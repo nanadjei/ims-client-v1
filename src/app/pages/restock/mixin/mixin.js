@@ -1,4 +1,5 @@
 import { incrementor } from "@/app/helpers/app";
+import { mapMutations } from "vuex";
 export default {
     data() {
         return {
@@ -16,9 +17,13 @@ export default {
     },
 
     methods: {
+        ...mapMutations({
+            "setServerError": "restock/SET_SERVER_ERROR"
+        }),
 
         /** Add new table if the user clicks on the last table's name input */
         appendNewBluePrintWith(arrayItems, index) {
+            this.setServerError(false);
             this.vueSuggestIndex = index;
             if((index + 1) == (arrayItems.length)) {
                 return arrayItems.push(this.stockBluePrint());
@@ -32,6 +37,7 @@ export default {
 
         /** Validate if not last item in the table list */
         returnFalseIfLastItem(index){
+            this.setServerError(false);
             return index <= this.vueSuggestIndex ? true : false;
         },
     },

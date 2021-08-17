@@ -59,7 +59,10 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div v-else style="color:#B6BACC !important;" class="text-center"> No results found for this query </div>
+                                    <div v-else style="color:#B6BACC !important;" class="text-center"> 
+                                      <i class="fas fa-box-open fa-3x"></i>
+                                      <p class="pt-6">None of your items are out of stock</p> 
+                                    </div>
                                 </div>
 
                             </div>

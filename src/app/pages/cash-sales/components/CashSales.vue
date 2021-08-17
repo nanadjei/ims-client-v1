@@ -5,15 +5,15 @@
 
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
           <div v-show="getSaleItems && getSaleItems.length" class="btn-group mr-2" role="group" aria-label="First group">
-            <button @click="submitSales" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <button @click="validateNfireConfirmModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
               <i class="fas fa-save"></i> Submit Sales
             </button>
           </div>
-          <div class="btn-group mr-2" role="group" aria-label="Second group">
+          <!-- <div class="btn-group mr-2" role="group" aria-label="Second group">
             <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#select-date-modal">
               <i class="fas fa-calendar-alt"></i> Change Sales Date
             </button>
-          </div>
+          </div> -->
           <div class="btn-group" role="group" aria-label="Third group">
             <button @click="printSaleItems" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
               <i class="fas fa-print"></i> Print Invoice
@@ -24,6 +24,12 @@
     <div slot="content">
       <!-- Content here -->
       <p class="mb-4">This table represent a list of items ready for sale. You can change the value of a quantity by clicking on any cell in the quantity column. </p>
+      
+      <div v-if="showSalesError" class="alert alert-danger d-flex align-items-center" role="alert">
+        <div>
+          Some fields are required. Kindly check your table and fill them properly.
+        </div>
+      </div>
 
         <!-- DataTales Example -->
         <div class="row">
@@ -34,6 +40,7 @@
               </div>
               <div class="card-body">
                 <div class="table-responsive">
+                  <ValidationObserver ref="observer">
                   <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                       <tr>
@@ -92,6 +99,7 @@
                       </tr>
                     </tbody>
                   </table>
+                  </ValidationObserver>
                 </div>
               </div>
             </div>
@@ -108,38 +116,25 @@
               </div>
             </div>
             <!-- Item details -->
-            <item-details v-show="!ifObjIsEmpty && getSearchedProds.length" :item="activeItem"></item-details>
+            <item-details v-show="(!ifObjIsEmpty && getSearchedProds.length)" :item="activeItem"></item-details>
           </div>
         </div>
 
 
-    <!-- Inventory Modal -->
-    <!-- <inventory-modal></inventory-modal> -->
-
-    <!-- Sales Date Modal-->
-    <div class="modal fade" id="select-date-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">What date do you want to make your sales?</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <input type="date" v-model="sales.created_at" @input="setNewDateInStore" class="form-control" />
-            </div>
-              <p class="fs-smaller">Format: Month/Day/Year</p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" type="button" data-dismiss="modal">Submit</button>
-          </div>
-        </div>
+    <!-- Are you sure you want to save? -->
+    <app-modal
+    title="Are you sure you want to save sales in this date?"
+    ref="cashSalesConfirmSave"
+    modal-id="cashSalesConfirmSave"
+    @onSubmit="createSales"
+    submit-btn-class="btn-primary" 
+    submit-btn-name="Confirm">
+      <div class="form-group">
+        <input type="date" v-model="sales.created_at" @input="setNewDateInStore" class="form-control" />
       </div>
-    </div>
+      <p class="fs-smaller">Date Format: Day/Month/Year</p>
+
+    </app-modal>
 
     </div>
   </auth-layout>
@@ -147,10 +142,10 @@
 
 <script>
 import AuthLayout from "@/app/layouts/auth/Layout";
-// import { debounce } from "lodash";
 import { ucFirst } from "@/app/helpers/app";
+import AppModal from "@/app/reusables/AppModal";
 // import InventoryModal from "@/app/pages/cash-sales/partials/InventoryModal";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import Mixin from "@/app/pages/cash-sales/mixins/mixin";
 import VueSuggest from '@/app/pages/restock/partials/VueSuggest';
 import VueSuggestMixing from "@/app/pages/restock/mixin/mixin";
@@ -158,10 +153,11 @@ import ItemDetails from "@/app/pages/cash-sales/partials/ItemDetails";
 
 export default {
   name: "CashSales",
-  components: { AuthLayout, VueSuggest, ItemDetails },
+  components: { AuthLayout, VueSuggest, ItemDetails, AppModal },
   mixins: [ Mixin, VueSuggestMixing ],
   data() {
     return {
+      showSalesError: false,
       activeItem: {},
       sales: {
         created_at: ""
@@ -173,7 +169,7 @@ export default {
     ...mapGetters({
       salesCreatedAt: "cashsales/getCreatedAt",
       getSaleItems: "cashsales/getSaleItems",
-      // getSalesObj: "cashsales/getSalesObj",
+      getSalesObj: "cashsales/getSalesObj",
       getSearchedProds: "cashsales/getProducts"
     }),
 
@@ -193,6 +189,10 @@ export default {
       deleteByIndex: "cashsales/removeSaleItemByIndex"
     }),
 
+    ...mapMutations({
+      setSalesItems: "cashsales/RESET_SALE_ITEM"
+    }),
+
     /** When navigating through the dropdown items on VueSuggest
      * Get each active item.
      */
@@ -205,13 +205,47 @@ export default {
       return ucFirst(string);
     },
 
+    /** Check if table cells have no validation error,
+     * fire the modal to 
+     */
+    async validateNfireConfirmModal() {
+      const isValid = await this.$refs.observer.validate();
+        if (!isValid) {
+          return;
+        }
+        return this.prepareSalesItems();
+    },
+
+    prepareSalesItems() {
+      this.showSalesError = false;
+      const saleItems = [...this.getSaleItems];
+
+      const lastItem = saleItems.slice(-1)[0];
+      const lastItemIndex = saleItems.lastIndexOf(lastItem);
+
+      saleItems.forEach((item) => {
+        if(!item.product_id && (saleItems.indexOf(item) !== lastItemIndex)) {
+          return this.showSalesError = true;
+        }
+      })
+      this.setSalesItems(saleItems);
+      if(this.showSalesError === false) this.$refs.cashSalesConfirmSave.show();
+    },
+
     /** Send sales items to the server */
-    submitSales() {
-      return this.submitSalesItems(this.getSalesObj);
+    async createSales() {
+      const lastItem =  [...this.getSaleItems].slice(-1)[0];
+
+      if(!lastItem.product_id) this.getSaleItems.pop();
+    /** Make all stock quantities zero */
+      await this.submitSalesItems(this.getSalesObj).then(() => {
+        this.activeItem = {};
+        return this.$refs.cashSalesConfirmSave.close();
+      });
     },
 
     printSaleItems() {
-      return this.printSaleItems(this.getSalesObj);
+      return this.printSaleItems(this.getSaleItems);
     },
 
     /**

@@ -54,12 +54,11 @@
 </style>
 
 <script>
-import { ucFirst, navigateToRouter, objectSetValues } from "@/app/helpers/app";
+import { navigateToRouter, objectSetValues } from "@/app/helpers/app";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import AuthLayout from "@/app/layouts/auth/Layout";
 import Mixin from "@/app/pages/restock/mixin/mixin";
 // import AppModal from "@/app/reusables/AppModal";
-// import VueSuggest from '@/app/pages/restock/partials/VueSuggest';
 import ReplenishmentTable from '../partials/ReplenishmentTable';
 
 export default {
@@ -73,25 +72,12 @@ export default {
         to: ""
       },
       cleanInput: false,
-      item: {},
       items: [],
       tableNumbering: 1,
 
       modal: {
         disabled: true,
-      },
-      
-      products: [
-        {
-          number: 1,
-          name: "",
-          product_id: "",
-          quantity: "",
-          cost_price: "",
-          total_cost_price: 0.00
-        }
-      ],
-      restock_at:""
+      }
     }
   },
 
@@ -142,19 +128,6 @@ export default {
     /** Search for product by name */
     fetchProducts() {
       return this.fetchPaginatedProds({paginate_by: 15, query_date: this.query_date });
-    },
-
-    /** Get selected dropdown item */
-    getSelectedItem(item) {
-      return this.products[this.vueSuggestIndex].product_id = item.id;
-    },
-
-    /** Remove item from storage by index
-     *
-     * @param { Int } itemIndex - The index of the array item
-     */
-    removeItemByIndex(itemIndex) {
-      this.products.splice(itemIndex, 1);
     },
   },
 

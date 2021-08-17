@@ -24,6 +24,7 @@
                             <td>{{ _ucFirst(item.product.name) }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.cost_price }}</td>
+                            <td>{{ item.selling_price }}</td>
                             <td>{{ item.total_cost_price }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Action buttons">
@@ -36,7 +37,7 @@
                   </table>
                    <div v-else style="color:#B6BACC !important;" class="text-center"> 
                      <i class="fas fa-box-open fa-3x"></i>
-                     <p>No results found for this query</p> 
+                     <p>No results found.</p> 
                     </div>
                 </div>
               </div>

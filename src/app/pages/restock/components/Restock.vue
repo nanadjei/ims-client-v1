@@ -36,6 +36,7 @@
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Cost Price</th>
+                        <th>Selling Price</th>
                         <th>Total Cost</th>
                         <th>Action</th>
                       </tr>
@@ -80,6 +81,19 @@
                               autocomplete="off"
                               v-model="item.cost_price" 
                               @keypress="allowFloatsOnly($event, index, 'cost_price')"
+                              />
+                          </ValidationProvider>
+                        </td>
+                        <td width="20%">
+                          <ValidationProvider
+                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
+                            name="selling_price"
+                            v-slot="{ errors }">
+                          <input :class="['qty contenteditable', errors[0] ? 'was-invalid' : '']" 
+                              name="selling_price"
+                              autocomplete="off"
+                              v-model="item.selling_price" 
+                              @keypress="allowFloatsOnly($event, index, 'selling_price')"
                               />
                           </ValidationProvider>
                         </td>
@@ -157,6 +171,7 @@ export default {
           product_id: "",
           quantity: "",
           cost_price: "",
+          selling_price: "",
           total_cost_price: 0.00
         }
       ],
@@ -257,6 +272,7 @@ export default {
 
     /** Get selected dropdown item */
     getSelectedItem(item) {
+      this.products[this.vueSuggestIndex].selling_price = item.selling_price;
       return this.products[this.vueSuggestIndex].product_id = item.id;
     },
 

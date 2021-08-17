@@ -7,6 +7,7 @@
                 v-slot="{ errors }">
                 <input :class="['qty contenteditable', errors && errors[0] ? 'was-invalid' : '']"
                 v-model="state"
+                name="state"
                 @input="emitInputChange"
                 min="2"
                 max="12"
@@ -18,9 +19,9 @@
                 autocomplete="off"
             />
             </ValidationProvider>
-            <div class="list-dropdown" v-if="suggestedList && isActive">
+            <div class="list-dropdown" v-if="listItems && isActive">
                 <ul id="items-list" class="list list-unstyled">
-                    <li :id="`item-${index}`" :class="['list-item', { 'list-item-active': index === cursor }]" v-for="(item, index) in suggestedList" 
+                    <li :id="`item-${index}`" :class="['list-item', { 'list-item-active': index === cursor }]" v-for="(item, index) in listItems" 
                         :key="index"
                         @click="onSelect(item)"
                     >
@@ -53,9 +54,8 @@
         border: 1px solid #858796;
     }
 
-    /* .list.list-unstyled {
-        max-height: 80px;
-        overflow-y: scroll;   
+    /* .list .list-unstyled {
+        
     } */
 
     .list-dropdown {
@@ -69,6 +69,7 @@
 </style>
 
 <script>
+import { ifRouteIs } from "@/app/helpers/app";
 export default {
     name: 'vue-suggest',
 
@@ -78,28 +79,26 @@ export default {
         return {
             cursor: 0,
             state: this.setValue,
-            isActive: false
+            isActive: false,
+            listItems: []
         }
     },
 
     watch: {
         suggestedList(value) {
-            if(value && this.state) this.suggestedList = this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
+            if(value && this.state) this.listItems = this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
         },
         cleanInput(value) {
             if(value) this.state = "";
         },
-        // state(value) {
-        //     if(!value) this.suggestedList = []; this.suggestedList = [];
-        // },
         setValue(value) {
             return this.state = value;
         },
-        suggestedList(value) {  
+        listItems(value) {  
             if(value.length && this.isActive === true) this.onActiveItem(value[this.cursor]);
         },
         cursor(value) {
-            return this.onActiveItem(this.suggestedList[value]);
+            return this.onActiveItem(this.listItems[value]);
         }
     },
 
@@ -122,14 +121,13 @@ export default {
         },
 
         focus() {
-            this.suggestedList.length && this.isActive === true;
             return this.$emit('focus');
         },
 
         onSelect(item) {
-            /** If item has finished do nothing. */
-            if(item.quantity_remaining === 0) return;
-            
+             /** If item has finished do nothing. */
+            if(item.quantity_remaining === 0 && this.ifRouteIs('cash-sales')) return;
+
             this.setState(item.name);
             this.onActiveItem(item);
             return this.$emit('onSelect', item);
@@ -144,30 +142,37 @@ export default {
         },
         keyDown() {
             this.$emit('key-down', this.state);
-            if ((this.isActive) && (this.suggestedList.length && this.cursor < this.suggestedList.length - 1)) {
+            if ((this.isActive) && (this.listItems.length && this.cursor < this.listItems.length - 1)) {
                 this.cursor += 1;
             }
         },
-        keyEnter() {
-            const targetListItem = this.suggestedList[this.cursor];
-            /** If item has finished do nothing. */
-            if(targetListItem.quantity_remaining === 0) return;
+    keyEnter() {
+        const targetListItem = this.listItems[this.cursor];
+        /** If item has finished do nothing. */
+        if(targetListItem.quantity_remaining === 0 && this.ifRouteIs('cash-sales')) return;
 
-            if (this.isActive && targetListItem) {
-                this.state = targetListItem.name;
-                this.isActive = false;
-            }
-            return this.$emit('onSelect', targetListItem);
-            },
+        if (this.isActive && targetListItem) {
+            this.state = targetListItem.name;
+            this.isActive = false;
+        }
+        return this.$emit('onSelect', targetListItem);
         },
-        
 
+        ifRouteIs(routeName) {
+            return ifRouteIs(routeName);
+        }
+    },
     created() {
         window.addEventListener('click', (e) => {
             if (!this.$el.contains(e.target)){
             this.isActive = false
             }
         })
+
+        // $(document).ready(function() {
+        //     /** Prevent auto complete */
+        //     $("input[name='state']").attr('autocomplete', 'new-password');
+        // })
     }
 }
 </script>
