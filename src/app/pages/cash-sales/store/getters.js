@@ -10,4 +10,3 @@ export const getSaleItems = (state) => state.sales.items;
 
 /** Get all products which was requested from the server */
 export const getProducts = (state) => state.products;
-

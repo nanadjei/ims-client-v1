@@ -7,7 +7,6 @@
                 v-slot="{ errors }">
                 <input :class="['qty contenteditable', errors && errors[0] ? 'was-invalid' : '']"
                 v-model="state"
-                name="state"
                 @input="emitInputChange"
                 min="2"
                 max="12"

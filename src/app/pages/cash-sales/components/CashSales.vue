@@ -71,18 +71,12 @@
                         </td>
                         <!-- Quantity -->
                         <td width="10%">
-                          <ValidationProvider
-                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
-                            name="quantity"
-                            v-slot="{ errors }">
-                          <input :class="['qty contenteditable', errors[0] ? 'was-invalid' : '']" 
+                          <input :class="['qty contenteditable', (item.product_id.quantity_remaining) < item.quantity ? 'was-invalid' : '']" 
                               v-model="item.quantity"
-                              name="quantity"
                               autocomplete="off"
                               @input="recalculateSale(item)"
                               @keypress="acceptOnlyNumbers($event, index, 'quantity')"
                             />
-                        </ValidationProvider>
                         </td>
                         <!-- Selling Price -->
                         <td width="10%" style="padding: 1.5rem">

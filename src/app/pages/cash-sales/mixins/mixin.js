@@ -4,7 +4,7 @@ import { incrementor, allowFloatsOnly } from "@/app/helpers/app";
 export default {
     data() {
         return {
-            tableNumber: 1
+            tableNumber: 1,
         }
     },
 
@@ -48,8 +48,8 @@ export default {
 
     /** Get selected dropdown item */
     getSelectedItem(item) {
-        if(item.quantity == 0) return;
-        return this.updateSalesItems({ tIndex: this.vueSuggestIndex, product: item })
+        if(item.quantity_remainining == 0) return;
+        return this.updateSalesItems({ tIndex: this.vueSuggestIndex, product: item });
     },
 
     /** Search for product by name */

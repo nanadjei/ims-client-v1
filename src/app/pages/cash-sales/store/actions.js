@@ -30,7 +30,7 @@ export const updateSalesItems = ({ getters, commit }, payload) => {
     
     const setValues = { 
         name: product.name, 
-        product_id: product.id, 
+        product_id: product, 
         selling_price: product.selling_price
     }
     Object.assign(el, setValues);
