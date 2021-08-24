@@ -33,7 +33,7 @@
 
         <!-- DataTales Example -->
         <div class="row">
-          <div class="col-8">
+          <div class="col-8 make-unsticky">
             <div class="card shadow mb-4">
               <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Sales Table</h6>
@@ -99,18 +99,20 @@
             </div>
           </div>
           <div class="col-4">
+            <div class="make-sticky">
             <div class="card shadow mb-4">
-              <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Items Summary</h6>
-              </div>
-              <div class="card-body">
-                  <p>
-                    Total Cost: <strong>GHS {{ aggregateTotalCostOfSalesItems.toFixed(2) }}</strong>
-                  </p>
-              </div>
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Items Summary</h6>
+                </div>
+                <div class="card-body">
+                    <p>
+                      Total Cost: <strong>GHS {{ aggregateTotalCostOfSalesItems.toFixed(2) }}</strong>
+                    </p>
+                </div>
             </div>
             <!-- Item details -->
             <item-details v-show="(!ifObjIsEmpty && getSearchedProds.length)" :item="activeItem"></item-details>
+            </div>
           </div>
         </div>
 

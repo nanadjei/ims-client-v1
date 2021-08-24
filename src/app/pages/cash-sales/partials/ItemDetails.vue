@@ -1,5 +1,5 @@
 <template>
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-4 make-sticky">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Item Details</h6>
         </div>
