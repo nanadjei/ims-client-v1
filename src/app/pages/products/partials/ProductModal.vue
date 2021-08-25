@@ -23,7 +23,12 @@
                     <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="stk-qty"> Stock Quantity: </label>
-                        <input id="stk-qty" type="number" class="form-control" v-model="getProductToEdit.stock_quantity" :readonly="productInEditMode">
+                        <input id="stk-qty" 
+                          type="number" 
+                          class="form-control" 
+                          v-model="getProductToEdit.stock_quantity" 
+                          :readonly="productInEditMode && !isSuperAdmin"
+                        >
                     </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
@@ -76,6 +81,7 @@
     </modal>
 </template>
 <script>
+import Spatie from "@/app/helpers/Spatie";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "ProductModal",
@@ -90,7 +96,10 @@ export default {
       getProductToEdit: "products/getProductInContext",
       productInEditMode: "products/getProdModalInEditMode",
       isBusy: "products/getProdModalIsBusy"
-    })
+    }),
+    isSuperAdmin() {
+      return new Spatie().userHasRole('super admin');
+    }
   },
 
   methods: {
@@ -115,6 +124,6 @@ export default {
     closeModal() {
       return this.$modal.hide(this.modalName);
     }
-  }
+  },
 };
 </script>
