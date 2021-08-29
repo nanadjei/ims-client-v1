@@ -8,3 +8,15 @@ export const fetchSalesReport = ({ commit }, fetchByReportDates) => {
         });
     }, 1000);
 };
+
+/** Delete a sale item */
+export const deleteSale = ({ commit, getters }, id) => {
+        setTimeout(() => {
+            HttpRequest({ url: `sales/${id}`, type: "delete", user: "admin" }).then(() => {
+                const salesItems = [...getters.getSalesReport];
+                const results = salesItems.filter(item => id !== item.id);
+                commit('SET_SALES_REPORT', results);
+            return window.vm.$toast.success("Item deleted");
+            });
+        }, 1000);
+    }
