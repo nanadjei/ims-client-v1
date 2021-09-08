@@ -1,4 +1,3 @@
-
 /**
  * Set the values of an object to a specific value;
  * Example form:{email: "email", password: "password"};
@@ -41,9 +40,32 @@ export const sum = (items, propToSum) => {
     }, 0);
 };
 
+/**
+ * Multiply two numbers and convert them to float.
+ * 
+ * @param { Number } col1 
+ * @param { Number } col1 
+ * @returns Float of the multiplied numbers
+ */
+export const multiTwoCols = (col1, col2) => {
+    return (Number(col1) * Number(col2)).toFixed(2);
+}
+
+/**
+ * Allow only float numbers in input fields
+ * return 
+ */
+export const allowFloatsOnly = (arrayItems, event, index, key) => {
+      var value = arrayItems[index][key];
+
+      let keyCode = (event.keyCode ? event.keyCode : event.which);
+       // only allow number and one dot
+        if ((keyCode < 48 || keyCode > 57) && (keyCode !== 46 || value.indexOf('.') != -1)) event.preventDefault();
+    };
+
 /** Hide some portion of email. Example: na**********@gmail.com */
 export const partiallyHideEmail = function (email) {
-    return email.replace(/(.{2})(.*)(?=@)/, function (gp1, gp2, gp3) {
+    return email.replace(/(.{2})(.*)(?=@)/, function (gp2, gp3) {
         for (let i = 0; i < gp3.length; i++) {
             gp2 += "*";
         }
@@ -52,8 +74,22 @@ export const partiallyHideEmail = function (email) {
 };
 
 /** Route to a specific component
-     * @var object routerName  - Eg; {'name': 'dashboard'}
-     */
+ * @var object routerName  - Eg; {'name': 'dashboard'}
+ */
 export const navigateToRouter = (route) => {
-    if (this.$route.name !== route.name) this.$router.push(route);
+    if (window.vm.$route.name !== route.name) window.vm.$router.push(route);
 };
+
+/** Auto increment numbers */
+export const incrementor = (loop, counter) => {
+    counter = 1;
+        for( let i = 0; i < loop.length; i++ ) {
+            loop[i].number = counter;
+            counter++;
+        }
+    };
+
+// If route is not the same as arg then return true.
+export const ifRouteIs = (routeName) => {
+    return window.vm.$route.name == routeName ? true : false;
+}

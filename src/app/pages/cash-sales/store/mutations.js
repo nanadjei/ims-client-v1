@@ -34,3 +34,6 @@ export const RESET_SALE_ITEM = (state, payload) => {
 export const SET_PRODUCTS = (state, payload) => {
     return (state.products = payload);
 };
+
+/** Set this anytime a product is selected from the dropdown items in VueSugguested  */
+export const SET_VUESUGGUST_SELECTED_PROD = (state, payload) => state.vueSuggestSelectedProd = payload; 

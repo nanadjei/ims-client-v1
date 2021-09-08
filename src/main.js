@@ -28,6 +28,7 @@ Vue.use(Toast, { timeout: 2000 });
 /** Vue Modal */
 import VModal from "vue-js-modal";
 import "vue-js-modal/dist/styles.css";
+import './registerServiceWorker'
 Vue.use(VModal);
 
 Vue.config.productionTip = false;

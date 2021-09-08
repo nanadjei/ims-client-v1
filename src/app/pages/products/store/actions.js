@@ -18,7 +18,9 @@ export const updateProductItem = ({ commit, dispatch }, payload) => {
     commit("SET_PROD_MODAL_IS_BUSY", true);
     setTimeout(() => {
         HttpRequest({ url: payload.url, type: payload.method, user: "admin", data: payload.data })
-            .then(window.vm.$toast.success("Product successfully saved"));
+            .then((res) => {
+                res.data.status == '200' && window.vm.$toast.success("Product successfully saved")
+            }).catch(() => window.vm.$toast.error("Sorry, this action cannot be performed!")) ;
         if (payload.method === "post") {
             dispatch("fetchProducts", { page_number: 1, paginate_by: 15 });
         }
@@ -29,7 +31,7 @@ export const updateProductItem = ({ commit, dispatch }, payload) => {
 
 export const searchProduct = ({ commit }, keyword) => {
     setTimeout(() => {
-        HttpRequest({ url: `products/search/${keyword}`, type: 'get', user: "admin" }).then((res) => {
+        HttpRequest({ url: `products/search/${keyword}`, type: 'post', user: "admin" }).then((res) => {
             commit("SET_PRODUCTS", res.data);
         });
     }, 1000);

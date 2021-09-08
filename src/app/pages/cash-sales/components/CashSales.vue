@@ -5,15 +5,15 @@
 
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
           <div v-show="getSaleItems && getSaleItems.length" class="btn-group mr-2" role="group" aria-label="First group">
-            <button @click="submitSales" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <button @click="validateNfireConfirmModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
               <i class="fas fa-save"></i> Submit Sales
             </button>
           </div>
-          <div class="btn-group mr-2" role="group" aria-label="Second group">
+          <!-- <div class="btn-group mr-2" role="group" aria-label="Second group">
             <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#select-date-modal">
               <i class="fas fa-calendar-alt"></i> Change Sales Date
             </button>
-          </div>
+          </div> -->
           <div class="btn-group" role="group" aria-label="Third group">
             <button @click="printSaleItems" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
               <i class="fas fa-print"></i> Print Invoice
@@ -24,19 +24,27 @@
     <div slot="content">
       <!-- Content here -->
       <p class="mb-4">This table represent a list of items ready for sale. You can change the value of a quantity by clicking on any cell in the quantity column. </p>
+      
+      <div v-if="showSalesError" class="alert alert-danger d-flex align-items-center" role="alert">
+        <div>
+          Some fields are required. Kindly check your table and fill them properly.
+        </div>
+      </div>
 
         <!-- DataTales Example -->
         <div class="row">
-          <div class="col-8">
+          <div class="col-8 make-unsticky">
             <div class="card shadow mb-4">
               <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Sales Table</h6>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
+                  <ValidationObserver ref="observer">
                   <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                       <tr>
+                        <th>No.</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Selling Price</th>
@@ -46,63 +54,83 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in getSaleItems" :key="index">
-                        <td width="50%">{{ _ucFirst(item.name) }}</td>
-                        <td class="p-0 width-none" width="10%">
-                          <!-- <input ref="qty" class="qty contenteditable" v-model="sales.items[index].quantity" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57"/> -->
-                          <input :id="'input-'+ item.id" class="qty contenteditable" v-model="item.quantity" @input="updateSalesItems" onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57"/>
-                          </td>
-                        <td>{{ parseFloat(item.selling_price).toFixed(2) }}</td>
-                        <td>{{ item.total_cost.toFixed(2) }}</td> 
-                        <td><i @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td>
+                        <td style="padding: 1.5rem">{{ item.number }}</td> 
+                        <td width="50%">
+                          <vue-suggest 
+                            :rules="returnFalseIfLastItem(index) ? 'required' : ''"
+                            :index="index"
+                            :set-value="item.name"
+                            :suggested-list="getSearchedProds"
+                            :clean-input="cleanInput || !item.name"
+                            @onInputChange="handleSearch"
+                            @focus="appendNewBluePrintWith(getSaleItems, index)" 
+                            @onSelect="getSelectedItem"
+                            @onActiveItem="getActiveItem"
+                            >
+                          </vue-suggest>
+                        </td>
+                        <!-- Quantity -->
+                        <td width="10%">
+                          <input :class="['qty contenteditable', (item.product_id.quantity_remaining) < item.quantity ? 'was-invalid' : '']" 
+                              v-model="item.quantity"
+                              autocomplete="off"
+                              @input="recalculateSale(item)"
+                              @keypress="acceptOnlyNumbers($event, index, 'quantity')"
+                            />
+                        </td>
+                        <!-- Selling Price -->
+                        <td width="10%" style="padding: 1.5rem">
+                          {{ Number(item.selling_price).toFixed(2) }}
+                        </td>
+                        <!-- Item Total -->
+                        <!-- <td width="10%" style="padding: 1.5rem">{{ (item.quantity * item.selling_price || 0.00).toFixed(2) }}</td> -->
+                        <td width="10%" style="padding: 1.5rem">{{ Number(item.total_cost).toFixed(2) || 0.00 }}</td>
+                        <td width="10%" style="padding: 1.5rem">
+                          <div class="text-center" aria-label="Action buttons">
+                            <i @click="removeItemFromTable(item)" v-if="hideTrashCanWith(getSaleItems, index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
+                          </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
+                  </ValidationObserver>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-4">
+            <div class="make-sticky">
             <div class="card shadow mb-4">
-              <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Items Summary</h6>
-              </div>
-              <div class="card-body">
-                  <p>
-                    Total Cost: <strong>GHS {{ aggregateTotalCostOfSalesItems.toFixed(2) }}</strong>
-                  </p>
-              </div>
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Items Summary</h6>
+                </div>
+                <div class="card-body">
+                    <p>
+                      Total Cost: <strong>GHS {{ aggregateTotalCostOfSalesItems.toFixed(2) }}</strong>
+                    </p>
+                </div>
+            </div>
+            <!-- Item details -->
+            <item-details v-show="(!ifObjIsEmpty && getSearchedProds.length)" :item="activeItem"></item-details>
             </div>
           </div>
         </div>
 
 
-    <!-- Inventory Modal -->
-    <inventory-modal></inventory-modal>
-
-    <!-- Sales Date Modal-->
-    <div class="modal fade" id="select-date-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">What date do you want to make your sales?</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <input type="date" v-model="sales.created_at" @input="setNewDateInStore" class="form-control" />
-            </div>
-              <p class="fs-smaller">Format: Month/Day/Year</p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <button class="btn btn-primary" type="button" data-dismiss="modal">Submit</button>
-          </div>
-        </div>
+    <!-- Are you sure you want to save? -->
+    <app-modal
+    title="Are you sure you want to save sales in this date?"
+    ref="cashSalesConfirmSave"
+    modal-id="cashSalesConfirmSave"
+    @onSubmit="createSales"
+    submit-btn-class="btn-primary" 
+    submit-btn-name="Confirm">
+      <div class="form-group">
+        <input type="date" v-model="sales.created_at" @input="setNewDateInStore" class="form-control" />
       </div>
-    </div>
+      <p class="fs-smaller">Date Format: Day/Month/Year</p>
+
+    </app-modal>
 
     </div>
   </auth-layout>
@@ -111,17 +139,24 @@
 <script>
 import AuthLayout from "@/app/layouts/auth/Layout";
 import { ucFirst } from "@/app/helpers/app";
-import InventoryModal from "@/app/pages/cash-sales/partials/InventoryModal";
-import { mapGetters, mapActions } from "vuex";
+import AppModal from "@/app/reusables/AppModal";
+// import InventoryModal from "@/app/pages/cash-sales/partials/InventoryModal";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import Mixin from "@/app/pages/cash-sales/mixins/mixin";
+import VueSuggest from '@/app/pages/restock/partials/VueSuggest';
+import VueSuggestMixing from "@/app/pages/restock/mixin/mixin";
+import ItemDetails from "@/app/pages/cash-sales/partials/ItemDetails";
+
 export default {
   name: "CashSales",
-  components: { AuthLayout, InventoryModal },
-  mixins: [Mixin],
+  components: { AuthLayout, VueSuggest, ItemDetails, AppModal },
+  mixins: [ Mixin, VueSuggestMixing ],
   data() {
     return {
+      showSalesError: false,
+      activeItem: {},
       sales: {
-        created_at: "",
+        created_at: ""
       },
     };
   },
@@ -131,6 +166,7 @@ export default {
       salesCreatedAt: "cashsales/getCreatedAt",
       getSaleItems: "cashsales/getSaleItems",
       getSalesObj: "cashsales/getSalesObj",
+      getSearchedProds: "cashsales/getProducts"
     }),
 
     /** Sum up the total of sales
@@ -140,24 +176,72 @@ export default {
       return this.sum([...this.getSaleItems], "total_cost");
     },
   },
+
   methods: {
     ...mapActions({
-      dispatchSalesItems: "cashsales/saveNewSalesItems",
-      dispatchPrintSaleItems: "cashsales/printSaleItems",
+      submitSalesItems: "cashsales/saveNewSalesItems",
+      printSaleItems: "cashsales/printSaleItems",
+      searchProduct: "cashsales/searchProduct",
+      deleteByIndex: "cashsales/removeSaleItemByIndex"
     }),
+
+    ...mapMutations({
+      setSalesItems: "cashsales/RESET_SALE_ITEM"
+    }),
+
+    /** When navigating through the dropdown items on VueSuggest
+     * Get each active item.
+     */
+    getActiveItem(payload) {
+      return this.activeItem = payload;
+    },
 
     /** Make first letter uppercase */
     _ucFirst(string) {
       return ucFirst(string);
     },
 
+    /** Check if table cells have no validation error,
+     * fire the modal to 
+     */
+    async validateNfireConfirmModal() {
+      const isValid = await this.$refs.observer.validate();
+        if (!isValid) {
+          return;
+        }
+        return this.prepareSalesItems();
+    },
+
+    prepareSalesItems() {
+      this.showSalesError = false;
+      const saleItems = [...this.getSaleItems];
+
+      const lastItem = saleItems.slice(-1)[0];
+      const lastItemIndex = saleItems.lastIndexOf(lastItem);
+
+      saleItems.forEach((item) => {
+        if(!item.product_id && (saleItems.indexOf(item) !== lastItemIndex)) {
+          return this.showSalesError = true;
+        }
+      })
+      this.setSalesItems(saleItems);
+      if(this.showSalesError === false) this.$refs.cashSalesConfirmSave.show();
+    },
+
     /** Send sales items to the server */
-    submitSales() {
-      return this.dispatchSalesItems(this.getSalesObj);
+    async createSales() {
+      const lastItem =  [...this.getSaleItems].slice(-1)[0];
+
+      if(!lastItem.product_id) this.getSaleItems.pop();
+    /** Make all stock quantities zero */
+      await this.submitSalesItems(this.getSalesObj).then(() => {
+        this.activeItem = {};
+        return this.$refs.cashSalesConfirmSave.close();
+      });
     },
 
     printSaleItems() {
-      return this.dispatchPrintSaleItems(this.getSalesObj);
+      return this.printSaleItems(this.getSaleItems);
     },
 
     /**
@@ -188,25 +272,20 @@ export default {
       }, 0);
     },
 
-    /** Update all sales items */
-    updateSalesItems() {
-      this.$store.dispatch("cashsales/updateSalesItems");
-    },
-
     /** Remove item from storage by index
      *
      * @param { Int } itemIndex - The index of the array item
      */
-    removeItemByIndex(itemIndex) {
-      this.$store.commit("cashsales/REMOVE_SALE_ITEM", itemIndex);
+    removeItemFromTable(item) {
+      return this.deleteByIndex(item);
     },
   },
   mounted() {
     this.setFormCreatedAtToTodaysDate();
     this.sales.created_at = this.salesCreatedAt;
-    // this.sales.items = this.getSaleItems;
+
     /** Fetch products from server */
-    this.$store.dispatch("cashsales/fetchProductsAsync");
+    // this.$store.dispatch("cashsales/fetchProductsAsync");
   },
 };
 </script>

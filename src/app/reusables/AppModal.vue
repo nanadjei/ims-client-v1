@@ -15,7 +15,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" @click="submit" class="btn" :class="submitBtnClass" :disabled="isLoading">
+            <button type="submit" @click="submit" class="btn" :class="submitBtnClass" :disabled="isLoading || disabled">
               <i v-show="isLoading" class="fas fa-spinner fa-spin fa-spin"></i>
               {{ submitBtnName ? submitBtnName : "Submit" }}
               </button>
@@ -27,7 +27,7 @@
 <script>
 export default {
   name: "AppModal",
-  props: ["title", "submitBtnClass", "submitBtnName", "modalId"],
+  props: ["title", "submitBtnClass", "submitBtnName", "modalId", "disabled"],
   data() {
     return {
       isLoading: false

@@ -50,7 +50,7 @@
                         <td>{{ item.total_cost }}</td>
                         <!-- <td>{{ parseFloat(item.selling_price).toFixed(2) }}</td> -->
                         <!-- <td>{{ item.total_cost.toFixed(2) }}</td>  -->
-                        <!-- <td><i @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td> -->
+                        <td v-show="isSuperAdmin"><i @click="attemptRemoval(item.id)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td>
                       </tr>
                     </tbody>
                   </table>
@@ -71,6 +71,15 @@
               </div>
             </div>
           </div>
+
+          <app-modal
+            title="Are you sure you want to delete this item?"
+            ref="salesReportConfirmSave"
+            modal-id="salesReportConfirmSave"
+            @onSubmit="removeItem()"
+            submit-btn-class="btn-danger" 
+            submit-btn-name="Confirm">
+          </app-modal>
         </div>
 
     </div>
@@ -78,18 +87,21 @@
 </template>
 
 <script>
+import Spatie from "@/app/helpers/Spatie";
 import AuthLayout from "@/app/layouts/auth/Layout";
+import AppModal from "@/app/reusables/AppModal";
 import { ucFirst, sum, objectSetValues } from "@/app/helpers/app";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "SalesReport",
-  components: { AuthLayout },
+  components: { AuthLayout, AppModal },
   data() {
     return {
       report_date: {
         from: "",
         to: ""
-      }
+      },
+      productToRemove: null
     };
   },
 
@@ -98,17 +110,21 @@ export default {
       getSalesReport: "salesReport/getSalesReport",
       queryingSalesReport: "salesReport/getQueryingSalesReport"
     }),
+    isSuperAdmin() {
+      return new Spatie().userHasRole('super admin');
+    },
 
     /** Sum up the total of sales
      * spread all the sales items from store and sum up their total_costs
      */
     aggregateTotalCostOfSalesItems() {
-      return sum([...this.getSalesReport], "total_cost");
+      return this.getSalesReport && sum([...this.getSalesReport], "total_cost");
     }
   },
   methods: {
     ...mapActions({
-      fetchSalesReport: "salesReport/fetchSalesReport"
+      fetchSalesReport: "salesReport/fetchSalesReport",
+      deleteSale: "salesReport/deleteSale"
     }),
 
     /** Make first letter uppercase */
@@ -127,10 +143,18 @@ export default {
 
     /** Remove item from storage by index
      *
-     * @param { Int } itemIndex - The index of the array item
+     * @param { Int } id - The id of the array item
      */
-    removeItemByIndex(itemIndex) {
-      this.$store.commit("cashsales/REMOVE_SALE_ITEM", itemIndex);
+    attemptRemoval(id) {
+      this.productToRemove = id;
+      return this.$refs.salesReportConfirmSave.show();
+    },
+
+    /** Delete a sale item */
+    async removeItem() {
+      await this.deleteSale(this.productToRemove).then(() => {
+        return this.$refs.salesReportConfirmSave.close();
+      });
     }
   },
   mounted() {

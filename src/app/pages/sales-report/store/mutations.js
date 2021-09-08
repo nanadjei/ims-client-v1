@@ -1,5 +1,3 @@
-
-
 /** Set sales report data */
 export const SET_SALES_REPORT = (state, payload) => {
     return (state.sales_report = payload);

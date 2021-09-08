@@ -125,3 +125,56 @@ div.dataTables_wrapper div.dataTables_filter input {
   background-position: center;
   background-size: cover;
 }
+
+.vue-suggestion .vs__input-group .vs__input {
+  color: #858796 !important;
+  padding: 0.75rem !important;
+  border: none !important;
+  width: 100%;
+}
+
+.vue-suggestion .vs__list {
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-top: none;
+  max-height: 400px;
+  overflow-y: auto;
+  border-bottom: 1px solid #023d7b;
+  position: relative;
+  z-index: 1;
+}
+
+/* ************************ */
+
+.pb-6 {
+  padding-bottom: 3rem;
+}
+
+.pos-absolute {
+  position: absolute;
+}
+
+.list .list-item.list-item-active {
+  background-color: #4d72de;
+  color: #fff;
+}
+
+.contenteditable {
+  position: relative;
+  display: block;
+}
+
+.was-invalid {
+  border: 1px solid #dc3545 !important;
+}
+
+.make-unsticky {
+  float: left;
+  width: 71%;
+}
+
+.make-sticky {
+  position: fixed;
+  width: 25%;
+}
