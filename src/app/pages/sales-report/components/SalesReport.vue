@@ -50,7 +50,7 @@
                         <td>{{ item.total_cost }}</td>
                         <!-- <td>{{ parseFloat(item.selling_price).toFixed(2) }}</td> -->
                         <!-- <td>{{ item.total_cost.toFixed(2) }}</td>  -->
-                        <td><i @click="attemptRemoval(item.id)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td>
+                        <td v-show="isSuperAdmin"><i @click="attemptRemoval(item.id)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i></td>
                       </tr>
                     </tbody>
                   </table>
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import Spatie from "@/app/helpers/Spatie";
 import AuthLayout from "@/app/layouts/auth/Layout";
 import AppModal from "@/app/reusables/AppModal";
 import { ucFirst, sum, objectSetValues } from "@/app/helpers/app";
@@ -109,6 +110,9 @@ export default {
       getSalesReport: "salesReport/getSalesReport",
       queryingSalesReport: "salesReport/getQueryingSalesReport"
     }),
+    isSuperAdmin() {
+      return new Spatie().userHasRole('super admin');
+    },
 
     /** Sum up the total of sales
      * spread all the sales items from store and sum up their total_costs
