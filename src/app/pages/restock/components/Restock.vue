@@ -222,6 +222,7 @@ export default {
             product_id: "",
             quantity: "",
             cost_price: "",
+            selling_price: "",
             total_cost_price: 0.00
         }
     },
