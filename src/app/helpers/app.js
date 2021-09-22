@@ -74,13 +74,17 @@ export const partiallyHideEmail = function (email) {
 };
 
 /** Route to a specific component
- * @var object routerName  - Eg; {'name': 'dashboard'}
+ * @var { String } object routerName  - Eg; {'name': 'dashboard'}
  */
 export const navigateToRouter = (route) => {
     if (window.vm.$route.name !== route.name) window.vm.$router.push(route);
 };
 
-/** Auto increment numbers */
+/** Auto increment numbers 
+ * @var { Array } loop loop - Array of items to loop through.
+ * @var { Number } counter counter - Where to start counting from.
+ * @return void
+*/
 export const incrementor = (loop, counter) => {
     counter = 1;
         for( let i = 0; i < loop.length; i++ ) {
@@ -92,4 +96,18 @@ export const incrementor = (loop, counter) => {
 // If route is not the same as arg then return true.
 export const ifRouteIs = (routeName) => {
     return window.vm.$route.name == routeName ? true : false;
+}
+/**  
+ * Loop through array of items set some values and reassign the object;
+ * @var { Array } loop - Array of items.
+ * @var { String } key - Key to find. Eg; Item.id.
+ * @var { String } isEqualTo - The truthy value. Eg; 1.
+ * @var { Object } stack  - The value to set. Eg; 
+*/
+export const setObject = (loop, key, isEqualTo, stack ) => {
+    var array = [...loop];
+
+    const el = array.find(item => item[key] === isEqualTo);
+
+    return Object.assign(el, stack);
 }

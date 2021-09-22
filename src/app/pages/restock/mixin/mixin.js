@@ -21,6 +21,16 @@ export default {
             "setServerError": "restock/SET_SERVER_ERROR"
         }),
 
+        showExpirationModal(item) {
+            this.expiration.number = item.number;
+            this.expiration.date = item.expired_at;
+            return this.$refs.expiredAtModal.show();
+        },
+
+        hideExpirationModal() {
+            return this.$refs.expiredAtModal.close();
+        },
+
         /** Add new table if the user clicks on the last table's name input */
         appendNewBluePrintWith(arrayItems, index) {
             this.setServerError(false);

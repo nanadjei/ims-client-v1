@@ -99,6 +99,7 @@
                         </td>
                         <td class="p-t-cell">{{ item.total_cost_price = (item.quantity * item.cost_price).toFixed(2) }}</td> 
                         <td class="p-t-cell text-center">
+                          <i @click="showExpirationModal(item)" class="far fa-clock text-primary cursor-pointer pr-2" title="Set expiration date"></i>
                           <i v-if="hideTrashCanWith(products, index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
                         </td>
                       </tr>
@@ -133,6 +134,18 @@
             >
             <input type="date" class="form-control" v-model="restock_at" @input="modal.disabled = false"/>
             <span v-show="!restock_at" class="text-danger fs-smaller">Please specify date of restock</span>
+        </app-modal>
+
+        <!-- Modal to confirm date of item expiration -->
+          <app-modal 
+              ref="expiredAtModal" 
+              modal-id="expiredAtModal" 
+              title="Date of expiration" 
+              @onSubmit="setItemExpiration" 
+              submit-btn-class="btn-primary"
+              >
+              <input type="date" class="form-control" v-model="expiration.date"/>
+              <span v-show="!expiration.date" class="text-danger fs-smaller">Please specify date of expiration</span>
           </app-modal>
     </div>
   </auth-layout>
@@ -145,7 +158,7 @@
 
 <script>
 import { debounce } from "lodash";
-import { ucFirst, sum } from "@/app/helpers/app";
+import { ucFirst, sum, setObject } from "@/app/helpers/app";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import AuthLayout from "@/app/layouts/auth/Layout";
 import Mixin from "@/app/pages/restock/mixin/mixin";
@@ -163,6 +176,12 @@ export default {
       modal: {
         disabled: true,
       },
+
+      // Manually set expiration date of items
+      expiration: {
+        number: "",
+        date: ""
+      },
       
       products: [
         {
@@ -172,7 +191,8 @@ export default {
           quantity: "",
           cost_price: "",
           selling_price: "",
-          total_cost_price: 0.00
+          total_cost_price: 0.00,
+          expired_at: ""
         }
       ],
       restock_at:""
@@ -236,7 +256,12 @@ export default {
       });
     },
 
-    
+    /** Set expiration date of item */
+    setItemExpiration() {
+      const { number, date } = this.expiration;
+      setObject(this.products, "number", number, { expired_at: date });
+      return this.hideExpirationModal();
+    },
 
     /** When modal is confirmed */
     async submitStockItems() {
