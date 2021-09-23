@@ -243,7 +243,8 @@ export default {
             quantity: "",
             cost_price: "",
             selling_price: "",
-            total_cost_price: 0.00
+            total_cost_price: 0.00,
+            expired_at: ""
         }
     },
 
