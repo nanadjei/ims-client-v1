@@ -97,6 +97,7 @@ export default {
             // your search method
             this.setState(item.name);
             this.$emit('onSelect', item);
+            this.cursor = 0;
         },
 
         /** Navigations */

@@ -32,18 +32,7 @@
 
       <!-- DataTales Example -->
         <replenishment-table></replenishment-table>
-        <!-- Modal to confirm date of restocking items -->
-        <!-- <app-modal 
-            ref="sendRestockDataModal" 
-            modal-id="sendRestockDataModal" 
-            title="Please specify date" 
-            @onSubmit="submitStockItems" 
-            submit-btn-class="btn-primary"
-            :disabled="modal.disabled"
-            >
-            <input type="date" class="form-control" v-model="restock_at" @input="modal.disabled = false"/>
-            <span v-show="!restock_at" class="text-danger fs-smaller">Please specify date of restock</span>
-          </app-modal> -->
+        
     </div>      
   </auth-layout>
 </template>

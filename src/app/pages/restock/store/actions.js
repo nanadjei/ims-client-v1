@@ -11,6 +11,7 @@ export const storeRestockData = ({ commit }, data) => {
         commit("SET_SERVER_ERROR", false);
         window.vm.$toast.success("Products successfully saved");
     }).catch(() => {
+        window.vm.$toast.success("Sorry something went wrong");
         commit("SET_SERVER_ERROR", true);
     });
 };

@@ -85,7 +85,8 @@ export default {
 
     watch: {
         suggestedList(value) {
-            if(value && this.state) this.listItems = this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
+            if(value && this.state) this.listItems = 
+            this.suggestedList.filter(item => item.name.toLowerCase().includes(this.state.toLowerCase()));
         },
         cleanInput(value) {
             if(value) this.state = "";
@@ -104,6 +105,7 @@ export default {
     methods: {
         emitInputChange(){
             if(this.state) {
+                this.cursor = 0;
                 this.isActive = true;
                 return this.$emit('onInputChange', this.state);
             }
@@ -126,10 +128,10 @@ export default {
         onSelect(item) {
              /** If item has finished do nothing. */
             if(item.quantity_remaining === 0 && this.ifRouteIs('cash-sales')) return;
-
             this.setState(item.name);
             this.onActiveItem(item);
-            return this.$emit('onSelect', item);
+            this.$emit('onSelect', item);
+            return this.cursor = 0;
         },
 
         /** Navigations */
