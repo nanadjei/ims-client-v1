@@ -1,7 +1,7 @@
 <template>
     <div class="vue-fragment">
     <!-- DataTales Example -->
-     <p class="mb-4">This table represent a list of products available. </p>
+    <p class="mb-4">This table represent a list of products available. </p>
 
         <div class="card shadow mb-4">
             <div class="card-header py-3">
