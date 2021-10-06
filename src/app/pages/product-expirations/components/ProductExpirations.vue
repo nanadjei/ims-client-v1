@@ -49,11 +49,11 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(item, index) in getProducts.data" :key="index">
+                                                    <tr v-for="(item, index) in getProducts && getProducts.data" :key="index">
                                                         <td> {{ item.id }}</td>
-                                                        <td width="50%" class="cursor-pointer">{{ _ucFirst(item.name) }}</td>
-                                                        <td> {{ item.stock_quantity }}</td>
-                                                        <td> {{ item.quantity_remaining }}</td>
+                                                        <td width="50%" class="cursor-pointer">{{ item.product && item.product.name }}</td>
+                                                        <td> {{ item.product && item.product.stock_quantity }}</td>
+                                                        <td> {{ item.product && item.product.quantity_remaining }}</td>
                                                         <td>{{ item.cost_price }}</td> 
                                                         <td>{{ (item.selling_price) }}</td>
                                                         <td> <span :class="`badge badge-${setClass(item.quantity_remaining, item.expired_at)}`">{{ convertTimeStamp(item.expired_at) }}</span> </td>
@@ -68,7 +68,7 @@
                                     </div>
                                     
                                     <!-- Pagination -->
-                                    <div v-show="getProducts.data && (getProducts.data.length)" class="row">
+                                    <div v-show="getProducts && getProducts.data && (getProducts.data.length)" class="row">
                                         <div class="col-sm-12 col-md-7">
                                         <div class="dataTables_paginate paging_simple_numbers">
                                         <paginate 
@@ -111,6 +111,14 @@ export default {
     name: "ProductExpirations",
 
     components: { AuthLayout, Paginate },
+
+    computed: {
+        ...mapGetters({
+            getProducts: "productExpirations/getProducts",
+            getTotalPages: "productExpirations/getTotalPages"
+        })
+    },
+
     data() {
         return {
             paginate_by: 15,
@@ -140,8 +148,8 @@ export default {
             
         },
 
-        _fetchProducts(pageNumb = 1) {
-            return this.fetchProducts({
+        async _fetchProducts(pageNumb = 1) {
+            return await this.fetchProducts({
                 page_number: pageNumb,
                 paginate_by: this.paginate_by
             });
@@ -164,15 +172,7 @@ export default {
             }, 500),
     },
 
-
-    computed: {
-        ...mapGetters({
-            getProducts: "productExpirations/getProducts",
-            getTotalPages: "productExpirations/getTotalPages"
-        })
-    },
-
-    mounted() {
+    created() {
         this._fetchProducts();
     }
 }

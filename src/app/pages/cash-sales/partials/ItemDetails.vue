@@ -28,7 +28,7 @@ export default {
             const sixMonthsTime = this.$moment().add(process.env.VUE_APP_PRODUCTS_EXPIRE_IN_MONTHS, 'months').format("YYYY-MM-DD");
             const thisItemExpirationDate = this.$moment(this.item.expired_at).format("YYYY-MM-DD");
             
-            return this.item.expired_at && thisItemExpirationDate < sixMonthsTime ? 'text-danger': '';
+            return this.item.expired_at && thisItemExpirationDate < sixMonthsTime ? 'text-warning': '';
         }
     }
 }
