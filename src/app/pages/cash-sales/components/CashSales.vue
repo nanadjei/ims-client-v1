@@ -64,7 +64,7 @@
                             :clean-input="cleanInput || !item.name"
                             @onInputChange="handleSearch"
                             @focus="appendNewBluePrintWith(getSaleItems, index)" 
-                            @onSelect="getSelectedItem"
+                            @onSelect="getSelectedItem" 
                             @onActiveItem="getActiveItem"
                             >
                           </vue-suggest>

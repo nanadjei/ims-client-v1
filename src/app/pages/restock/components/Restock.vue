@@ -99,7 +99,7 @@
                         </td>
                         <td class="p-t-cell">{{ item.total_cost_price = (item.quantity * item.cost_price).toFixed(2) }}</td> 
                         <td class="p-t-cell text-center">
-                          <i @click="showExpirationModal(item)" class="far fa-clock text-primary cursor-pointer pr-2" title="Set expiration date"></i>
+                          <i @click="showExpirationModal(item)" class="fas fa-stopwatch text-primary cursor-pointer pr-2" title="Set expiration date"></i>
                           <i v-if="hideTrashCanWith(products, index)" @click="removeItemByIndex(index)" class="fas fa-trash-alt text-danger cursor-pointer" title="Delete"></i>
                         </td>
                       </tr>
@@ -300,6 +300,7 @@ export default {
     /** Get selected dropdown item */
     getSelectedItem(item) {
       this.products[this.vueSuggestIndex].selling_price = item.selling_price;
+      this.products[this.vueSuggestIndex].cost_price = item.cost_price;
       return this.products[this.vueSuggestIndex].product_id = item.id;
     },
 

@@ -24,7 +24,7 @@ export default {
     ...mapActions({
         updateSalesItems: "cashsales/updateSalesItems",
         recomputeSalesItems: "cashsales/recomputeSalesItems"
-    }),
+    }), 
 
     /** Product bluePrint/format */
     stockBluePrint() {
