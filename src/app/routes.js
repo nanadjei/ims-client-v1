@@ -6,6 +6,18 @@ import restock from "./pages/restock/routes";
 import replenishitems from "./pages/replenished-items/routes";
 import salesreport from "./pages/sales-report/routes";
 import products from "./pages/products/routes";
+import productexpirations from "./pages/product-expirations/routes";
 import errors from "./errors/routes";
 
-export default [...dashboard, ...cashsales, ...outofstock, ...salesreport, ...products, ...auth, ...errors, ...restock, ...replenishitems];
+export default [
+    ...dashboard, 
+    ...cashsales, 
+    ...outofstock, 
+    ...salesreport, 
+    ...products, 
+    ...auth, 
+    ...errors, 
+    ...restock, 
+    ...replenishitems,
+    ...productexpirations
+];

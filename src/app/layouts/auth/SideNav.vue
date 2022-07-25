@@ -51,6 +51,7 @@
               <div id="inventory" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                   <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item cursor-pointer" @click="navigateToRouter({'name': 'products'})">Products</a>
+                    <a class="collapse-item cursor-pointer" @click="navigateToRouter({'name': 'product-expirations'})">Expired Products</a>
                   </div>
               </div>
             </li>

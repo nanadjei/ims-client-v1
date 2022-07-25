@@ -10,7 +10,7 @@
                 @input="emitInputChange"
                 min="2"
                 max="12"
-                @focus="focus"
+                @focus="focus" 
                 :suggestedList="suggestedList"
                 @keydown.up.prevent="keyUp"
                 @keydown.down.prevent="keyDown"
